@@ -2,6 +2,7 @@
 from discord.ext import commands
 import datetime
 import requests
+from random import randint
 from config import GIPHY_API_KEY
 
 
@@ -22,7 +23,7 @@ def create_bot():
         await ctx.send(f'{diff[0]} hours, {diff[1]} minutes, {diff[2]} seconds, until 4:20.')
 
     @bot.command(name='giphy')
-    async def giphy_image_search(search_term):
+    async def giphy_image_search(ctx):
         """Giphy image search."""
         rand = randint(0, 20)
         params = {'api_key': GIPHY_API_KEY,
