@@ -39,4 +39,5 @@ Configuration is handled by creating a **.env** file. This should contain the fo
 
 ```.env
 DISCORD_TOKEN="your_discord_token"
+GIPHY_API_KEY="your_giphy_token"
 ```
