@@ -7,6 +7,8 @@
 [![GitHub Stars](https://img.shields.io/github/stars/toddbirchard/shibabot.svg?style=flat-square&colorA=4c566a&logo=GitHub&colorB=ebcb8b)](https://github.com/toddbirchard/shibabot/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/toddbirchard/shibabot.svg?style=flat-square&colorA=4c566a&logo=GitHub&colorB=ebcb8b)](https://github.com/toddbirchard/shibabot/network)
 
+![Shibabot](https://github.com/toddbirchard/shibabot/blob/master/.github/shibabot@2x.png?raw=true)
+
 
 ## Installation
 
