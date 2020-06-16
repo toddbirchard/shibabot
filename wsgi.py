@@ -1,5 +1,5 @@
 """Application entry point."""
-from application import create_bot
+from shibabot import create_bot
 from config import DISCORD_TOKEN
 
 bot = create_bot()

@@ -18,7 +18,7 @@ $ cd shibabot
 $ python3 -m venv myenv
 $ source myenv/bin/activate
 $ pip3 install -r requirements.txt
-$ flask run
+$ python3 wsgi.py
 ```
 
 **Installation via [Pipenv](https://pipenv-fork.readthedocs.io/en/latest/)**:
@@ -28,7 +28,7 @@ $ git clone https://github.com/hackersandslackers/shibabot.git
 $ cd shibabot
 $ pipenv shell
 $ pipenv update
-$ flask run
+$ python3 wsgi.py
 ```
 
 ## Configuration

@@ -9,7 +9,7 @@ verify_ssl = true
 python-dotenv = "*"
 discord = "*"
 requests = "*"
-
+loguru = "*"
 
 [requires]
 python_version = "3.8"
