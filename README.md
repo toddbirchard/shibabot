@@ -53,6 +53,5 @@ Replace the values in **.env.example** with your values and rename this file to 
 * `ALPHA_VANTAGE_API`: API key secret for fetching crypto data.
 * `PLOTLY_API_KEY`: Plotly chart studio API key.
 * `PLOTLY_USERNAME`: Plotly user to generate charts via Plotly studio.
-* 
 
 *Remember never to commit secrets saved in .env files to Github.*
