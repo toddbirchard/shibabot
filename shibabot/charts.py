@@ -13,6 +13,7 @@ from config import (
 )
 
 
+# Authenticate with Plotly chart studio
 chart_studio.tools.set_credentials_file(
     username=PLOTLY_USERNAME,
     api_key=PLOTLY_API_KEY

@@ -26,13 +26,14 @@ imdbpy = "*"
 python-dotenv = "*"
 
 [tool.poetry.dev-dependencies]
+pytest = "*"
 
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
 
 [tool.poetry.scripts]
-run = "wsgi:start"
+run = "main:bot"
 
 [tool.poetry.urls]
 issues = "https://github.com/toddbirchard/shibabot/issues"
