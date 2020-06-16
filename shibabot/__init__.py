@@ -30,14 +30,14 @@ def create_bot():
         am_time = now.replace(hour=4, minute=20, second=0)
         pm_time = now.replace(hour=16, minute=20, second=0)
         if am_time > now:
-            diff = f'{am_time - now}pm'
+            diff = f'{am_time - now}'
         elif am_time < now and now < pm_time:
-            diff = f'{pm_time - now}pm'
+            diff = f'{pm_time - now}'
         else:
             tomorrow_am_time = now.replace(day=now.day+1, hour=4, minute=20, second=0)
-            diff = f'{tomorrow_am_time - now}am'
+            diff = f'{tomorrow_am_time - now}'
         diff = diff.split(':')
-        await ctx.send(f'{diff[0]} hours, {diff[1]} minutes, {diff[2]} seconds, until 4:20.')
+        await ctx.send(f'{diff[0]} hours, {diff[1]} minutes, & {diff[2]} seconds until 4:20')
 
     @bot.command(name='giphy', )
     async def giphy_image_search(ctx):
