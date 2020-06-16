@@ -10,6 +10,7 @@ python-dotenv = "*"
 discord = "*"
 requests = "*"
 loguru = "*"
+pytz = "*"
 
 [requires]
 python_version = "3.8"
