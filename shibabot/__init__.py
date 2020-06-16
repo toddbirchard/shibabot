@@ -1,30 +1,26 @@
 """Initialize bot."""
-from random import randint
-from datetime import datetime, timezone
+from datetime import datetime
 import pytz
-import requests
 from discord.ext import commands
-from config import DISCORD_GUILD
 from .log import LOGGER
-from .api import get_stock_price, get_giphy_image, get_wiki_summary, get_crypto_price
 from .charts import stock_price_chart, crypto_plotly_chart
-
+from .api import (
+    get_stock_price,
+    get_giphy_image,
+    get_wiki_summary,
+    get_crypto_price
+)
 
 
 def create_bot():
+    """Start bot and register all commands."""
     bot = commands.Bot(command_prefix='!')
 
     @bot.event
     async def on_ready():
         """Confirm bot is connected."""
         for guild in bot.guilds:
-            if guild.name == DISCORD_GUILD:
-                break
-
-        LOGGER.info(
-            f'{bot.user} is connected to the following guild:\n'
-            f'{guild.name}(id: {guild.id})'
-        )
+            LOGGER.info(f'Connected to {guild.name}')
 
     @bot.command(name='420', help='Get time remaining until that time of day.')
     async def time_remaining(ctx):
@@ -33,14 +29,14 @@ def create_bot():
         am_time = now.replace(hour=4, minute=20, second=0)
         pm_time = now.replace(hour=16, minute=20, second=0)
         if am_time > now:
-            diff = f'{am_time - now}'
-        elif am_time < now and now < pm_time:
-            diff = f'{pm_time - now}'
+            remaining = f'{am_time - now}'
+        elif am_time < now < pm_time:
+            remaining = f'{pm_time - now}'
         else:
             tomorrow_am_time = now.replace(day=now.day+1, hour=4, minute=20, second=0)
-            diff = f'{tomorrow_am_time - now}'
-        diff = diff.split(':')
-        await ctx.send(f'{diff[0]} hours, {diff[1]} minutes, & {diff[2]} seconds until 4:20')
+            remaining = f'{tomorrow_am_time - now}'
+        remaining = remaining.split(':')
+        await ctx.send(f'{remaining[0]} hours, {remaining[1]} minutes, & {remaining[2]} seconds until 4:20')
 
     @bot.command(name='giphy', help='Search for a Giphy image.')
     async def giphy_search(ctx, query: str):
@@ -55,21 +51,22 @@ def create_bot():
     @bot.command(name='stock', help='Get 30-day stock performance.')
     async def stock(ctx, symbol: str):
         """Fetch stock price and generate 30-day performance chart."""
-        message = get_stock_price(symbol)
-        chart = stock_price_chart(symbol)
-        await ctw.send(f'{message} {chart}')
+        message, company = get_stock_price(symbol)
+        chart = stock_price_chart(symbol, company)
+        await ctx.send(f'{message} {chart}')
 
     @bot.command(name='crypto', help='Get 30-day crypto performance.')
     async def crypto(ctx, symbol: str):
         """Fetch crypto price and generate 30-day performance chart."""
-        message = get_stock_price(symbol)
+        message = get_crypto_price(symbol)
         chart = crypto_plotly_chart(symbol)
-        await ctw.send(f'{message} {chart}')
+        await ctx.send(f'{message} {chart}')
 
     @bot.command(name='wiki', help='Get Wikipedia page summary.')
     async def wiki(ctx, query: str):
         """Get summary of Wikipedia entry."""
         response = get_wiki_summary(query)
-        await ctw.send(response)
+        await ctx.send(response)
+        await ctx.send(response)
 
     return bot

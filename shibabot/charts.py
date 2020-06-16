@@ -1,3 +1,4 @@
+"""Chart creation."""
 import requests
 import pandas as pd
 import plotly.graph_objects as go
@@ -55,7 +56,7 @@ def crypto_plotly_chart(symbol):
 
 
 @LOGGER.catch
-def stock_price_chart(symbol):
+def stock_price_chart(symbol, company):
     """Get 30-day stock chart."""
     params = {'token': IEX_API_TOKEN, 'includeToday': 'true'}
     url = f'https://sandbox.iexapis.com/stable/stock/{symbol}/chart/1m/'
@@ -72,7 +73,7 @@ def stock_price_chart(symbol):
                     close=stock_df['close'])
                 ]
             )
-            fig.update_layout(xaxis_rangeslider_visible=False, title=message)
+            fig.update_layout(xaxis_rangeslider_visible=False, title=f'30-day performance of {company}')
             chart = py.plot(
                 fig,
                 filename=symbol,

@@ -1,11 +1,14 @@
+"""External APIs."""
+from random import randint
 import requests
 import wikipediaapi
-from config import IEX_API_TOKEN
+from config import IEX_API_TOKEN, GIPHY_API_KEY, GIPHY_API_ENDPOINT
 from .log import LOGGER
 
 
 @LOGGER.catch
 def get_giphy_image(query):
+    """Search for Gif matching query."""
     rand = randint(0, 20)
     params = {
         'api_key': GIPHY_API_KEY,
@@ -17,6 +20,7 @@ def get_giphy_image(query):
     }
     req = requests.get(GIPHY_API_ENDPOINT, params=params)
     return req.json()['data']
+
 
 @LOGGER.catch
 def get_stock_price(symbol):
@@ -34,7 +38,7 @@ def get_stock_price(symbol):
             change = req.json().get("ytdChange", None)
             if change:
                 message = f"{message} Change of {change:.2f}%"
-            return message
+            return message, company_name
     return f'There\'s no such company as {symbol}.'
 
 
@@ -42,7 +46,7 @@ def get_stock_price(symbol):
 def get_crypto_price(symbol):
     """Get crypto price for provided ticker label."""
     endpoint = f'https://api.cryptowat.ch/markets/bitfinex/{symbol.lower()}usd/summary'
-    req = requests.get(url=message)
+    req = requests.get(url=endpoint)
     prices = req.json()["result"]["price"]
     percentage = prices["change"]['percentage'] * 100
     if prices["last"] > 1:
@@ -61,4 +65,4 @@ def get_wiki_summary(query):
     """Fetch Wikipedia summary for a given query."""
     wiki = wikipediaapi.Wikipedia('en')
     page = wiki.page(query)
-    return page.summary
+    return page.summary[0:300]
