@@ -4,8 +4,11 @@ from datetime import datetime, timezone
 import pytz
 import requests
 from discord.ext import commands
-from config import GIPHY_API_KEY, GIPHY_API_ENDPOINT, DISCORD_GUILD
+from config import DISCORD_GUILD
 from .log import LOGGER
+from .api import get_stock_price, get_giphy_image, get_wiki_summary, get_crypto_price
+from .charts import stock_price_chart, crypto_plotly_chart
+
 
 
 def create_bot():
@@ -23,7 +26,7 @@ def create_bot():
             f'{guild.name}(id: {guild.id})'
         )
 
-    @bot.command(name='420')
+    @bot.command(name='420', help='Get time remaining until that time of day.')
     async def time_remaining(ctx):
         """Get remaining time until target time."""
         now = datetime.now(tz=pytz.timezone('America/New_York'))
@@ -39,24 +42,34 @@ def create_bot():
         diff = diff.split(':')
         await ctx.send(f'{diff[0]} hours, {diff[1]} minutes, & {diff[2]} seconds until 4:20')
 
-    @bot.command(name='giphy', )
-    async def giphy_image_search(ctx):
+    @bot.command(name='giphy', help='Search for a Giphy image.')
+    async def giphy_search(ctx, query: str):
         """Giphy image search."""
-        rand = randint(0, 20)
-        params = {
-            'api_key': GIPHY_API_KEY,
-            'q': search_term,
-            'limit': 1,
-            'offset': rand,
-            'rating': 'R',
-            'lang': 'en'
-        }
-        req = requests.get(GIPHY_API_ENDPOINT, params=params)
-        if bool(req.json()['data']):
-            image = req.json()['data'][0]['images']['original']['url']
+        search_results = get_giphy_image(query)
+        if bool(search_results):
+            image = search_results[0]['images']['original']['url']
             await ctx.send(image)
         else:
             await ctx.send('image not found :(')
 
-    return bot
+    @bot.command(name='stock', help='Get 30-day stock performance.')
+    async def stock(ctx, symbol: str):
+        """Fetch stock price and generate 30-day performance chart."""
+        message = get_stock_price(symbol)
+        chart = stock_price_chart(symbol)
+        await ctw.send(f'{message} {chart}')
 
+    @bot.command(name='crypto', help='Get 30-day crypto performance.')
+    async def crypto(ctx, symbol: str):
+        """Fetch crypto price and generate 30-day performance chart."""
+        message = get_stock_price(symbol)
+        chart = crypto_plotly_chart(symbol)
+        await ctw.send(f'{message} {chart}')
+
+    @bot.command(name='wiki', help='Get Wikipedia page summary.')
+    async def wiki(ctx, query: str):
+        """Get summary of Wikipedia entry."""
+        response = get_wiki_summary(query)
+        await ctw.send(response)
+
+    return bot

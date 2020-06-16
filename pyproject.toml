@@ -18,8 +18,12 @@ python = "^3.8"
 discord = "*"
 requests = "*"
 loguru = "*"
+pandas = "*"
+plotly = "*"
+chart-studio = "*"
+wikipedia-api = "*"
+imdbpy = "*"
 python-dotenv = "*"
-pytz = "^2020.1"
 
 [tool.poetry.dev-dependencies]
 
