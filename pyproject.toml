@@ -7,11 +7,13 @@ readme = "README.md"
 homepage = "https://github.com/toddbirchard/shibabot/"
 repository = "https://github.com/toddbirchard/shibabot/"
 documentation = "https://github.com/toddbirchard/shibabot/"
-keywords = ["Discord",
-            "Bot",
-            "Chatbot",
-            "Python",
-            "Discord Bot"]
+keywords = [
+    "Discord",
+    "Bot",
+    "Chatbot",
+    "Python",
+    "Discord Bot"
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
