@@ -2,11 +2,11 @@
 from os import getenv, environ, path
 from dotenv import load_dotenv
 
-
+# Find .env file
 basedir = path.abspath(path.dirname(__file__))
 load_dotenv(path.join(basedir, '.env'))
 
-# General
+# General config
 ENVIRONMENT = environ.get('ENVIRONMENT')
 BASE_DIR = environ.get('BASE_DIR')
 

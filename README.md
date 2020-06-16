@@ -18,7 +18,7 @@ $ cd shibabot
 $ python3 -m venv myenv
 $ source myenv/bin/activate
 $ pip3 install -r requirements.txt
-$ python3 wsgi.py
+$ python3 main.py
 ```
 
 **Installation via [Pipenv](https://pipenv-fork.readthedocs.io/en/latest/)**:
@@ -28,7 +28,7 @@ $ git clone https://github.com/toddbirchard/shibabot.git
 $ cd shibabot
 $ pipenv shell
 $ pipenv update
-$ python3 wsgi.py
+$ python3 main.py
 ```
 
 **Installation via [Poetry](https://python-poetry.org/)**:
