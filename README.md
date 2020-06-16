@@ -31,11 +31,13 @@ $ pipenv update
 $ python3 wsgi.py
 ```
 
-## Configuration
+## Usage
 
-Configuration is handled by creating a **.env** file. This should contain the following variables (replace the values with your own):
+Replace the values in **.env.example** with your values and rename this file to **.env**:
 
-```.env
-DISCORD_TOKEN="your_discord_token"
-GIPHY_API_KEY="your_giphy_token"
-```
+* `ENVIRONMENT`: Set to either `development` or `production` for logging purposes.
+* `DISCORD_TOKEN`: Secret API token.
+* `DISCORD_GUILD`: Server names for bot to join.
+
+
+*Remember never to commit secrets saved in .env files to Github.*
