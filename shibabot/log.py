@@ -34,7 +34,8 @@ def create_logger():
             format="<light-cyan>{time:MM-DD-YYYY HH:mm:ss}</light-cyan>"
             + " | <light-green>{level}</light-green>: "
             + " <light-white>{message}</light-white>",
-            level="INFO")
+            level="INFO"
+        )
         logger.add(
             sys.stderr,
             colorize=True,
