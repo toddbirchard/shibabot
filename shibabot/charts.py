@@ -7,7 +7,9 @@ import chart_studio
 from .log import LOGGER
 from config import (
     IEX_API_TOKEN,
+    IEX_API_BASE_URL,
     ALPHA_VANTAGE_API_KEY,
+    ALPHA_VANTAGE_CHART_BASE_URL,
     PLOTLY_USERNAME,
     PLOTLY_API_KEY
 )
@@ -29,7 +31,7 @@ def crypto_plotly_chart(symbol):
         'market': 'USD',
         'apikey': ALPHA_VANTAGE_API_KEY
     }
-    req = requests.get('https://www.alphavantage.co/query', params=params)
+    req = requests.get(ALPHA_VANTAGE_CHART_BASE_URL, params=params)
     data = req.json()
     df = pd.DataFrame.from_dict(data['Time Series (Digital Currency Daily)'], orient='index')[:30]
     if df.empty is False:
@@ -60,7 +62,7 @@ def crypto_plotly_chart(symbol):
 def stock_price_chart(symbol, company):
     """Get 30-day stock chart."""
     params = {'token': IEX_API_TOKEN, 'includeToday': 'true'}
-    url = f'https://sandbox.iexapis.com/stable/stock/{symbol}/chart/1m/'
+    url = f'{IEX_API_BASE_URL}{symbol}/chart/1m/'
     req = requests.get(url, params=params)
     if req.status_code == 200:
         stock_df = pd.read_json(req.content)

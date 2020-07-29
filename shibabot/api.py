@@ -9,7 +9,7 @@ from config import (
     IEX_API_BASE_URL,
     GIPHY_API_KEY,
     GIPHY_API_ENDPOINT,
-    ALPHA_VANTAGE_BASE_URL
+    ALPHA_VANTAGE_PRICE_BASE_URL
 )
 
 
@@ -57,7 +57,7 @@ def get_stock_price(symbol):
 @LOGGER.catch
 def get_crypto_price(symbol):
     """Get crypto price for provided ticker label."""
-    endpoint = f'{ALPHA_VANTAGE_BASE_URL}{symbol.lower()}usd/summary'
+    endpoint = f'{ALPHA_VANTAGE_PRICE_BASE_URL}{symbol.lower()}usd/summary'
     req = requests.get(url=endpoint)
     prices = req.json()["result"]["price"]
     percentage = prices["change"]['percentage'] * 100

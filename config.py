@@ -35,8 +35,11 @@ REDGIFS_ACCESS_KEY = environ.get('REDGIFS_ACCESS_KEY')
 # Stock
 IEX_API_TOKEN = environ.get('IEX_API_TOKEN')
 IEX_API_BASE_URL = 'https://sandbox.iexapis.com/stable/stock/'
+
+# Crypto
 ALPHA_VANTAGE_API_KEY = environ.get('ALPHA_VANTAGE_API_KEY')
-ALPHA_VANTAGE_BASE_URL = 'https://api.cryptowat.ch/markets/bitfinex/'
+ALPHA_VANTAGE_PRICE_BASE_URL = 'https://api.cryptowat.ch/markets/bitfinex/'
+ALPHA_VANTAGE_CHART_BASE_URL = 'https://www.alphavantage.co/query/'
 
 # Plotly
 PLOTLY_API_KEY = getenv('PLOTLY_API_KEY')
