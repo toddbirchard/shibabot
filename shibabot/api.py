@@ -1,4 +1,5 @@
 """External APIs."""
+from typing import Optional
 from random import randint
 import requests
 import wikipediaapi
@@ -14,7 +15,7 @@ from config import (
 
 
 @LOGGER.catch
-def get_giphy_image(query):
+def get_giphy_image(query) -> str:
     """Search for Gif matching query."""
     image = 'No image found... lern2search smh'
     rand = randint(0, 20)
@@ -35,7 +36,7 @@ def get_giphy_image(query):
 
 
 @LOGGER.catch
-def get_stock_price(symbol):
+def get_stock_price(symbol) -> str:
     """Summarize 24-hour price fluctuation."""
     params = {'token': IEX_API_TOKEN}
     req = requests.get(
@@ -55,7 +56,7 @@ def get_stock_price(symbol):
 
 
 @LOGGER.catch
-def get_crypto_price(symbol):
+def get_crypto_price(symbol) -> str:
     """Get crypto price for provided ticker label."""
     endpoint = f'{ALPHA_VANTAGE_PRICE_BASE_URL}{symbol.lower()}usd/summary'
     req = requests.get(url=endpoint)
@@ -73,7 +74,7 @@ def get_crypto_price(symbol):
 
 
 @LOGGER.catch
-def get_wiki_summary(query):
+def get_wiki_summary(query) -> str:
     """Fetch Wikipedia summary for a given query."""
     wiki = wikipediaapi.Wikipedia('en')
     page = wiki.page(query)
@@ -81,7 +82,7 @@ def get_wiki_summary(query):
 
 
 @LOGGER.catch
-def get_imdb_movie(movie_title):
+def get_imdb_movie(movie_title) -> Optional[str]:
     """Get movie information from IMDB."""
     ia = IMDb()
     movie_id = None
@@ -113,7 +114,7 @@ def get_imdb_movie(movie_title):
 
 
 @LOGGER.catch
-def get_imdb_boxoffice_data(movie):
+def get_imdb_boxoffice_data(movie) -> Optional[str]:
     """Get IMDB box office performance for a given film."""
     response = []
     if movie.data.get('box office', None):

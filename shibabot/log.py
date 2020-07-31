@@ -4,7 +4,7 @@ from loguru import logger
 from config import ENVIRONMENT
 
 
-def create_logger():
+def create_logger() -> logger:
     """Customer logger creation."""
     logger.remove()
     if ENVIRONMENT == 'production':

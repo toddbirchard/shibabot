@@ -1,4 +1,5 @@
 """Chart creation."""
+from typing import Optional
 import requests
 import pandas as pd
 import plotly.graph_objects as go
@@ -23,7 +24,7 @@ chart_studio.tools.set_credentials_file(
 
 
 @LOGGER.catch
-def crypto_plotly_chart(symbol):
+def crypto_plotly_chart(symbol) -> Optional[str]:
     """Generate 30-day crypto price chart."""
     params = {
         'function': 'DIGITAL_CURRENCY_DAILY',
@@ -59,7 +60,7 @@ def crypto_plotly_chart(symbol):
 
 
 @LOGGER.catch
-def stock_price_chart(symbol, company):
+def stock_price_chart(symbol, company) -> Optional[str]:
     """Get 30-day stock chart."""
     params = {'token': IEX_API_TOKEN, 'includeToday': 'true'}
     url = f'{IEX_API_BASE_URL}{symbol}/chart/1m/'
