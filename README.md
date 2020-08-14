@@ -1,6 +1,6 @@
 # Shibabot
 
-![Shibabot](https://github.com/toddbirchard/shibabot/blob/master/.github/shibabot@2x.png?raw=true)
+![Shibabot](./.github/shibabot_small@2x.png)
 
 ![Python](https://img.shields.io/badge/Python-v^3.8-blue.svg?logo=python&longCache=true&logoColor=white&colorB=5e81ac&style=flat-square&colorA=4c566a)
 ![Discord](https://img.shields.io/badge/Discord-v1.0.1-blue.svg?longCache=true&logo=discord&style=flat-square&logoColor=white&colorB=B48EAD&colorA=4c566a)
