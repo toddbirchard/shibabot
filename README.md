@@ -9,6 +9,13 @@
 [![GitHub Stars](https://img.shields.io/github/stars/toddbirchard/shibabot.svg?style=flat-square&colorA=4c566a&logo=GitHub&colorB=ebcb8b)](https://github.com/toddbirchard/shibabot/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/toddbirchard/shibabot.svg?style=flat-square&colorA=4c566a&logo=GitHub&colorB=ebcb8b)](https://github.com/toddbirchard/shibabot/network)
 
+## Commands
+
+* `!giphy [param]`: Fetch a gif from Giphy.
+* `!stock [param]`: 30-day performance chart for a given stock ticker symbol.
+* `!crypto [param]`: 30-day performance chart for a given cryptocurrency symbol.
+* `!wiki [param]`: Fetch Wikipedia summary of a given topic.
+* `!imdb [param]`: Fetch movie summaries, ratings, and boxoffice performance.
 
 ## Getting Started
 
@@ -62,11 +69,3 @@ Replace the values in **.env.example** with your values and rename this file to 
 * `PLOTLY_USERNAME`: Plotly user to generate charts via Plotly studio.
 
 *Remember never to commit secrets saved in .env files to Github.*
-
-## Commands
-
-* `!giphy [param]`: Searches Giphy for the provided query and returns a randomized image within the 20 most relevant results.
-* `!stock [param]`: Stock price performance for a given symbol. Returns a 24-hour summary and a 30-day candlestick chart.
-* `!crypto [param]`: Crypto price performance for a given crypto currency. Returns a 24-hour summary and a 30-day candlestick chart.
-* `!wiki [param]`: Generates a summary of any Wikipedia entry.
-* `!imdb [param]`: Get summaries, ratings, and boxoffice performance of any movie via IMDB.
