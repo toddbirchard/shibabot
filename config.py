@@ -1,8 +1,9 @@
-"""Bot configuration via environment variables."""
+"""Configuration via environment variables."""
 from os import getenv, environ, path
 from dotenv import load_dotenv
 
 
+# Load values from .env
 basedir = path.abspath(path.dirname(__file__))
 load_dotenv(path.join(basedir, '.env'))
 

@@ -1,3 +1,4 @@
+from datetime import datetime
 import requests
 import pandas as pd
 import plotly.graph_objects as go
@@ -19,7 +20,7 @@ chart_studio.tools.set_credentials_file(
 
 
 @LOGGER.catch
-def crypto_plotly_chart(symbol):
+def crypto_plotly_chart(symbol: str):
     """Generate 30-day crypto price chart."""
     params = {
         'function': 'DIGITAL_CURRENCY_DAILY',
@@ -55,7 +56,7 @@ def crypto_plotly_chart(symbol):
 
 
 @LOGGER.catch
-def stock_price_chart(symbol):
+def stock_price_chart(symbol: str):
     """Get 30-day stock chart."""
     params = {'token': IEX_API_TOKEN, 'includeToday': 'true'}
     url = f'https://sandbox.iexapis.com/stable/stock/{symbol}/chart/1m/'
@@ -63,6 +64,8 @@ def stock_price_chart(symbol):
     if req.status_code == 200:
         stock_df = pd.read_json(req.content)
         if stock_df.empty is False:
+            # stock_df['date'] = filter(stock_df['date'], )
+            print(stock_df['date'])
             fig = go.Figure(data=[
                 go.Candlestick(
                     x=stock_df['date'],
@@ -83,3 +86,6 @@ def stock_price_chart(symbol):
             chart_image = chart[:-1] + '.png'
             return chart_image
     return None
+
+
+# def remove_weekends(date: str):

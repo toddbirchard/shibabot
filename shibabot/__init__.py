@@ -1,14 +1,11 @@
 """Initialize bot."""
-from random import randint
-from datetime import datetime, timezone
+from datetime import datetime
 import pytz
-import requests
 from discord.ext import commands
 from config import DISCORD_GUILD
 from .log import LOGGER
 from .api import get_stock_price, get_giphy_image, get_wiki_summary, get_crypto_price
 from .charts import stock_price_chart, crypto_plotly_chart
-
 
 
 def create_bot():
