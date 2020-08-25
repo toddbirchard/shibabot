@@ -4,7 +4,7 @@ from loguru import logger
 from config import ENVIRONMENT
 
 
-def create_logger():
+def create_logger() -> logger:
     """Customer logger creation."""
     logger.remove()
     if ENVIRONMENT == 'production':
@@ -14,7 +14,7 @@ def create_logger():
             format="<light-cyan>{time:MM-DD-YYYY HH:mm:ss}</light-cyan>"
             + " | <light-red>{level}</light-red>:"
             + " <light-white>{message}</light-white>",
-            rotation="500 MB",
+            rotation="300 MB",
             level="INFO"
         )
         logger.add(
@@ -24,7 +24,7 @@ def create_logger():
             + " | <light-red>{level}</light-red>: "
             + " <light-white>{message}</light-white>",
             catch=True,
-            rotation="500 MB",
+            rotation="300 MB",
             level="ERROR"
         )
     else:
@@ -34,7 +34,8 @@ def create_logger():
             format="<light-cyan>{time:MM-DD-YYYY HH:mm:ss}</light-cyan>"
             + " | <light-green>{level}</light-green>: "
             + " <light-white>{message}</light-white>",
-            level="INFO")
+            level="INFO"
+        )
         logger.add(
             sys.stderr,
             colorize=True,
