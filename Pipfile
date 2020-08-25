@@ -3,9 +3,6 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
-[dev-packages]
-pytest = "*"
-
 [packages]
 discord = "*"
 requests = "*"
@@ -16,6 +13,9 @@ chart-studio = "*"
 wikipedia-api = "*"
 imdbpy = "*"
 python-dotenv = "*"
+
+[dev-packages]
+pytest = "*"
 
 [requires]
 python_version = "3.8"
