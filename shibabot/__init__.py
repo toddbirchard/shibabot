@@ -1,5 +1,4 @@
 """Initialize bot."""
-from .log import LOGGER
 from discord.ext import commands as discord_cmd
 from .commands import bot_commands
 from .events import bot_events

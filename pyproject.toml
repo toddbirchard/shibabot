@@ -25,6 +25,7 @@ plotly = "*"
 chart-studio = "*"
 wikipedia-api = "*"
 imdbpy = "*"
+emoji = "*"
 python-dotenv = "*"
 
 [tool.poetry.dev-dependencies]

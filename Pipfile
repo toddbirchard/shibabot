@@ -12,6 +12,7 @@ plotly = "*"
 chart-studio = "*"
 wikipedia-api = "*"
 imdbpy = "*"
+emoji = "*"
 python-dotenv = "*"
 
 [dev-packages]
