@@ -13,9 +13,11 @@
 
 * `!giphy [param]`: Fetch a gif from Giphy.
 * `!stock [param]`: 30-day performance chart for a given stock ticker symbol.
-* `!crypto [param]`: 30-day performance chart for a given cryptocurrency symbol.
+* `!crypto [param]`: 60-day performance chart for a given cryptocurrency symbol.
 * `!wiki [param]`: Fetch Wikipedia summary of a given topic.
-* `!imdb [param]`: Fetch movie summaries, ratings, and boxoffice performance.
+* `!imdb [param]`: Fetch movie summaries, ratings, and box office performance.
+* `!urban [param]`: Get definition from UrbanDictionary.
+* `!weather [param]`: Return temperature and weather per city/state/zip.
 
 ## Getting Started
 
@@ -67,5 +69,6 @@ Replace the values in **.env.example** with your values and rename this file to 
 * `ALPHA_VANTAGE_API`: API key secret for fetching crypto data.
 * `PLOTLY_API_KEY`: Plotly chart studio API key.
 * `PLOTLY_USERNAME`: Plotly user to generate charts via Plotly studio.
+* `WEATHERSTACK_API_KEY`: API key for fetching weather data.
 
 *Remember never to commit secrets saved in .env files to Github.*
