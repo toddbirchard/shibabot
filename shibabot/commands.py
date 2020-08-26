@@ -7,7 +7,9 @@ from .api import (
     get_giphy_image,
     get_wiki_summary,
     get_crypto_price,
-    get_imdb_movie
+    get_imdb_movie,
+    get_urban_definition,
+    get_weather
 )
 
 
@@ -25,12 +27,21 @@ def bot_commands(bot):
         elif am_time < now < pm_time:
             remaining = f'{pm_time - now}'
         else:
-            tomorrow_am_time = now.replace(day=now.day + 1, hour=4, minute=20, second=0)
+            tomorrow_am_time = now.replace(
+                day=now.day + 1,
+                hour=4,
+                minute=20,
+                second=0
+            )
             remaining = f'{tomorrow_am_time - now}'
         remaining = remaining.split(':')
-        await ctx.send(f'{remaining[0]} hours, {remaining[1]} minutes, & {remaining[2]} seconds until 4:20')
+        await ctx.send(
+            f'{remaining[0]} hours, \
+            {remaining[1]} minutes, \
+            & {remaining[2]} seconds until 4:20'
+        )
 
-    @bot.command(name='giphy', help='Search for a Giphy image.')
+    @bot.command(name='giphy', help='Search for a Giphy image.', aliases=["!"])
     async def giphy_search(ctx, query: str):
         """Giphy image search."""
         search_results = get_giphy_image(query)
@@ -60,11 +71,20 @@ def bot_commands(bot):
         response = get_wiki_summary(query)
         await ctx.send(response)
 
-    @bot.command(name='imdb', help='Get IMDB summary and boxoffice performance for a movie title.')
+    @bot.command(name='imdb', help='Get IMDB summary and box office performance for a movie title.')
     async def imdb(ctx, query: str):
         """Movie summaries from IMDB."""
         response = get_imdb_movie(query)
         await ctx.send(response)
 
-    return bot
+    @bot.command(name='urban', help='Get a definition from UrbanDictionary.', alias='define')
+    async def urban(ctx, word: str):
+        response = get_urban_definition(word)
+        await ctx.send(response)
 
+    @bot.command(name='weather', help='Get weather conditions for a given city, area, or zip code.')
+    async def weather(ctx, area: str):
+        response = get_weather(area)
+        await ctx.send(response)
+
+    return bot
