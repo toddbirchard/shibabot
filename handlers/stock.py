@@ -13,29 +13,47 @@ class StockChartHandler:
         self.token = token
         self.endpoint = endpoint
 
-    def _chart_raw_data(self, symbol: str) -> Optional[dict]:
+    def get_chart(self, symbol: str):
+        """Create chart of a company's 30-day stock performance."""
+        message = self._get_price(symbol)
+        chart = self._create_chart(symbol)
+        return f'{message} {chart}'
+
+    def _get_price(self, symbol: str):
+        """Get daily price summary."""
+        params = {'token': self.token}
+        req = requests.get(
+            f'{self.endpoint}{symbol}/quote',
+            params=params
+        )
+        if req.status_code == 200:
+            price = req.json().get('latestPrice', None)
+            company_name = req.json().get("companyName", None)
+            change = req.json().get("ytdChange", None)
+            if price and company_name:
+                message = f"{company_name}: Current price of ${price:.2f}."
+                if change:
+                    message = f"{company_name}: Current price of ${price:.2f}, change of {change:.2f}%"
+                return message
+        return None
+
+    def _get_chart_data(self, symbol: str) -> Optional[pd.DataFrame]:
         """Fetch 30-day performance data from API."""
         params = {'token': self.token, 'includeToday': 'true'}
         url = f'{self.endpoint}{symbol}/chart/1m'
         req = requests.get(url, params=params)
         if req.status_code == 200:
-            return req.json()
+            stock_df = pd.read_json(req.content)
+            if stock_df.empty is False:
+                stock_df = stock_df.loc[stock_df['date'].dt.dayofweek < 5]
+                stock_df.set_index(keys=stock_df['date'], inplace=True)
+                return stock_df
         return None
 
-    def _chart_data(self, symbol) -> Optional[pd.DataFrame]:
-        """Parse price data JSON into Pandas DataFrame."""
-        data = self._chart_raw_data(symbol)
-        stock_df = pd.read_json(data)
+    def _create_chart(self, symbol: str) -> Optional[str]:
+        """Create Plotly chart."""
+        stock_df = self._get_chart_data(symbol)
         if stock_df.empty is False:
-            stock_df = stock_df.loc[stock_df['date'].dt.dayofweek < 5]
-            stock_df.set_index(keys=stock_df['date'], inplace=True)
-            return stock_df
-        return None
-
-    def create_chart(self, symbol: str) -> Optional[str]:
-        """Create chart of a company's 30-day stock performance."""
-        stock_df = self._chart_data(symbol)
-        if stock_df:
             fig = go.Figure(data=[
                 go.Candlestick(
                     x=stock_df.index,
