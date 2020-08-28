@@ -1,12 +1,10 @@
 """Register bot commands."""
 from datetime import datetime
 import pytz
-from .charts import stock_price_chart, crypto_plotly_chart
+from handlers import crypto_chart_handler, stock_chart_handler
 from .api import (
-    get_stock_price,
     get_giphy_image,
     get_wiki_summary,
-    get_crypto_price,
     get_imdb_movie,
     get_urban_definition,
     get_weather
@@ -36,9 +34,7 @@ def bot_commands(bot):
             remaining = f'{tomorrow_am_time - now}'
         remaining = remaining.split(':')
         await ctx.send(
-            f'{remaining[0]} hours, \
-            {remaining[1]} minutes, \
-            & {remaining[2]} seconds until 4:20'
+            f'{remaining[0]} hours, {remaining[1]} minutes, & {remaining[2]} seconds until 4:20'
         )
 
     @bot.command(name='giphy', help='Search for a Giphy image.', aliases=["!"])
@@ -54,16 +50,14 @@ def bot_commands(bot):
     @bot.command(name='stock', help='Get 30-day stock performance.')
     async def stock(ctx, symbol: str):
         """Fetch stock price and generate 30-day performance chart."""
-        message = get_stock_price(symbol)
-        chart = stock_price_chart(symbol)
-        await ctx.send(f'{message} {chart}')
+        chart = stock_chart_handler.get_chart(symbol)
+        await ctx.send(chart)
 
     @bot.command(name='crypto', help='Get 60-day crypto performance.')
     async def crypto(ctx, symbol: str):
         """Fetch crypto price and generate 60-day performance chart."""
-        message = get_crypto_price(symbol)
-        chart = crypto_plotly_chart(symbol)
-        await ctx.send(f'{message} {chart}')
+        chart = crypto_chart_handler.get_chart(symbol)
+        await ctx.send(chart)
 
     @bot.command(name='wiki', help='Get Wikipedia page summary.')
     async def wiki(ctx, query: str):

@@ -7,11 +7,8 @@ import emoji
 from imdb import IMDb, IMDbError
 from .log import LOGGER
 from config import (
-    IEX_API_TOKEN,
-    IEX_API_BASE_URL,
     GIPHY_API_KEY,
     GIPHY_API_ENDPOINT,
-    ALPHA_VANTAGE_PRICE_BASE_URL,
     WEATHERSTACK_API_KEY
 )
 
@@ -35,44 +32,6 @@ def get_giphy_image(query) -> str:
     except KeyError as e:
         LOGGER.error(e)
     return image
-
-
-@LOGGER.catch
-def get_stock_price(symbol: str) -> Optional[str]:
-    """Summarize 24-hour price fluctuation."""
-    params = {'token': IEX_API_TOKEN}
-    req = requests.get(
-        f'{IEX_API_BASE_URL}{symbol}/quote',
-        params=params
-    )
-    if req.status_code == 200:
-        price = req.json().get('latestPrice', None)
-        company_name = req.json().get("companyName", None)
-        change = req.json().get("ytdChange", None)
-        if price and company_name:
-            message = f"{company_name}: Current price of ${price:.2f}."
-            if change:
-                message = f"{company_name}: Current price of ${price:.2f}, change of {change:.2f}%"
-            return message
-    return None
-
-
-@LOGGER.catch
-def get_crypto_price(symbol) -> str:
-    """Get crypto price for provided ticker label."""
-    endpoint = f'{ALPHA_VANTAGE_PRICE_BASE_URL}{symbol.lower()}usd/summary'
-    req = requests.get(url=endpoint)
-    prices = req.json()["result"]["price"]
-    percentage = prices["change"]['percentage'] * 100
-    if prices["last"] > 1:
-        response = f'{symbol.upper()}: Currently at ${prices["last"]:.2f}. ' \
-                   f'HIGH today of ${prices["high"]:.2f}, LOW of ${prices["low"]:.2f} ' \
-                   f'(change of {percentage:.2f}%).'
-    else:
-        response = f'{symbol.upper()}: Currently at ${prices["last"]}. ' \
-                   f'HIGH today of ${prices["high"]} LOW of ${prices["low"]} ' \
-                   f'(change of {percentage:.2f}%).'
-    return response
 
 
 @LOGGER.catch
@@ -129,7 +88,7 @@ def get_imdb_boxoffice_data(movie) -> Optional[str]:
             response.append(f"OPENING WEEK {opening_week}.")
         if gross:
             response.append(f"CUMULATIVE WORLDWIDE GROSS {gross}.")
-        return ' ' .join(response)
+        return ' '.join(response)
     return None
 
 
@@ -173,14 +132,12 @@ def get_weather(area):
     elif 'rain' in icon_name or 'showers' in icon_name:
         icon = emoji.emojize(':cloud_with_rain:', use_aliases=True)
     elif 'cloudy' in icon_name or 'partly' in icon_name:
-        icon = emoji.emojize(':sun_behind_rain_cloud:', use_aliases=True)
+        icon = emoji.emojize(':partly_sunny:', use_aliases=True)
     elif 'cloud' in icon_name or 'fog' in icon_name:
         icon = emoji.emojize(':cloud_with_rain:', use_aliases=True)
     else:
         icon = emoji.emojize(':sunny:', use_aliases=True)
-    response = f'{data["request"]["query"]}: \
-                 {icon} {data["current"]["weather_descriptions"][0]}. \
-                 {data["current"]["temperature"]}°f \
-                 (feels like {data["current"]["feelslike"]}°f). \
+    response = f'{data["request"]["query"]}:\n' \
+               f'{icon}  {data["current"]["weather_descriptions"][0]}.  {data["current"]["temperature"]}°f (feels like {data["current"]["feelslike"]}°f). \
                  {data["current"]["precip"]}% precipitation.'
     return response
