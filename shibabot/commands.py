@@ -38,8 +38,9 @@ def bot_commands(bot):
         )
 
     @bot.command(name='giphy', help='Search for a Giphy image.', aliases=["!"])
-    async def giphy_search(ctx, query: str):
+    async def giphy_search(ctx, *args):
         """Giphy image search."""
+        query = " ".join(args[:])
         search_results = get_giphy_image(query)
         if bool(search_results):
             image = search_results[0]['images']['original']['url']
