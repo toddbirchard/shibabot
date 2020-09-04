@@ -61,19 +61,22 @@ def bot_commands(bot):
         await ctx.send(chart)
 
     @bot.command(name='wiki', help='Get Wikipedia page summary.')
-    async def wiki(ctx, query: str):
+    async def wiki(ctx, *args):
         """Get summary of Wikipedia entry."""
+        query = " ".join(args[:])
         response = get_wiki_summary(query)
         await ctx.send(response)
 
     @bot.command(name='imdb', help='Get IMDB summary and box office performance for a movie title.')
-    async def imdb(ctx, query: str):
+    async def imdb(ctx, *args):
         """Movie summaries from IMDB."""
-        response = get_imdb_movie(query)
+        movie_title = " ".join(args[:])
+        response = get_imdb_movie(movie_title)
         await ctx.send(response)
 
     @bot.command(name='urban', help='Get a definition from UrbanDictionary.', alias='define')
-    async def urban(ctx, word: str):
+    async def urban(ctx, *args):
+        word = " ".join(args[:])
         response = get_urban_definition(word)
         await ctx.send(response)
 
