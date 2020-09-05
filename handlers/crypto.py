@@ -61,17 +61,56 @@ class CryptoChartHandler:
                 open=df['1a. open (USD)'],
                 high=df['2a. high (USD)'],
                 low=df['3a. low (USD)'],
-                close=df['4a. close (USD)'])
+                close=df['4a. close (USD)'],
+                decreasing={
+                    "line": {
+                        "color": "rgb(240, 99, 90)"
+                    },
+                    "fillcolor": "rgba(142, 53, 47, 0.5)"
+                },
+                increasing={
+                    "line": {
+                        "color": "rgb(48, 190, 161)"
+                    },
+                    "fillcolor": "rgba(22, 155, 124, 0.6)"
+                },
+                whiskerwidth=1,
+            )
         ],
             layout=go.Layout(
-                title=f'60-day performance of {symbol.upper()}',
+                font={
+                    "size": 15,
+                    "family": "Open Sans",
+                    "color": "#fff"
+                },
+                title={
+                    "x": 0.5,
+                    "font": {"size": 23},
+                    "text": f'30-day performance of {symbol.upper()}'
+                },
                 xaxis={
                     'type': 'date',
                     'rangeslider': {
                         'visible': False
                     },
+                    "ticks": "",
+                    "gridcolor": "#283442",
+                    "linecolor": "#506784",
+                    "automargin": True,
+                    "zerolinecolor": "#283442",
+                    "zerolinewidth": 2
                 },
-
+                yaxis={
+                    "ticks": "",
+                    "gridcolor": "#283442",
+                    "linecolor": "#506784",
+                    "automargin": True,
+                    "zerolinecolor": "#283442",
+                    "zerolinewidth": 2
+                },
+                autosize=True,
+                plot_bgcolor="rgb(23, 27, 31)",
+                paper_bgcolor="rgb(23, 27, 31)",
             )
         )
         chart = py.plot(
