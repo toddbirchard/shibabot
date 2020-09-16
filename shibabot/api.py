@@ -4,6 +4,7 @@ from random import randint
 import requests
 import wikipediaapi
 import emoji
+from requests.exceptions import HTTPError
 from imdb import IMDb, IMDbError
 from .log import LOGGER
 from config import (
@@ -97,23 +98,26 @@ def get_urban_definition(word) -> Optional[str]:
     """Fetch UrbanDictionary word definition."""
     params = {'term': word}
     headers = {'Content-Type': 'application/json'}
-    req = requests.get(
-        'http://api.urbandictionary.com/v0/define',
-        params=params,
-        headers=headers
-    )
-    results = req.json().get('list')
-    if results:
-        results = sorted(results, key=lambda i: i['thumbs_down'], reverse=True)
-        definition = str(results[0].get('definition'))
-        example = str(results[0].get('example'))
-        word = word.upper()
-        return f"{word}: {definition}. EXAMPLE: {example}."
+    try:
+        req = requests.get(
+            'http://api.urbandictionary.com/v0/define',
+            params=params,
+            headers=headers
+        )
+        results = req.json().get('list')
+        if results:
+            results = sorted(results, key=lambda i: i['thumbs_down'], reverse=True)
+            definition = str(results[0].get('definition'))
+            example = str(results[0].get('example'))
+            word = word.upper()
+            return f"{word}: {definition}. EXAMPLE: {example}."
+    except HTTPError as e:
+        LOGGER.error(f'Failed to get Urban definition for `{word}`: {e.response.content}')
     return None
 
 
 @LOGGER.catch
-def get_weather(area):
+def get_weather(area) -> Optional[str]:
     """Return temperature and weather per city/state/zip."""
     endpoint = 'http://api.weatherstack.com/current'
     params = {
@@ -121,23 +125,26 @@ def get_weather(area):
         'query': area,
         'units': 'f'
     }
-    req = requests.get(endpoint, params=params)
-    data = req.json()
-    condition = data["current"]["weather_descriptions"][0]
-    icon_name = condition.lower()
-    if 'lightning' in icon_name or 'storm' in icon_name:
-        icon = emoji.emojize(':cloud_with_lightning_and_rain:', use_aliases=True)
-    elif 'snow' in icon_name or 'ice' in icon_name:
-        icon = emoji.emojize(':snowflake:', use_aliases=True)
-    elif 'rain' in icon_name or 'showers' in icon_name:
-        icon = emoji.emojize(':cloud_with_rain:', use_aliases=True)
-    elif 'cloudy' in icon_name or 'partly' in icon_name:
-        icon = emoji.emojize(':partly_sunny:', use_aliases=True)
-    elif 'cloud' in icon_name or 'fog' in icon_name:
-        icon = emoji.emojize(':cloud_with_rain:', use_aliases=True)
-    else:
-        icon = emoji.emojize(':sunny:', use_aliases=True)
-    response = f'{data["request"]["query"]}:\n' \
+    try:
+        req = requests.get(endpoint, params=params)
+        data = req.json()
+        condition = data["current"]["weather_descriptions"][0]
+        icon_name = condition.lower()
+        if 'lightning' in icon_name or 'storm' in icon_name:
+            icon = emoji.emojize(':cloud_with_lightning_and_rain:', use_aliases=True)
+        elif 'snow' in icon_name or 'ice' in icon_name:
+            icon = emoji.emojize(':snowflake:', use_aliases=True)
+        elif 'rain' in icon_name or 'showers' in icon_name:
+            icon = emoji.emojize(':cloud_with_rain:', use_aliases=True)
+        elif 'cloudy' in icon_name or 'partly' in icon_name:
+            icon = emoji.emojize(':partly_sunny:', use_aliases=True)
+        elif 'cloud' in icon_name or 'fog' in icon_name:
+            icon = emoji.emojize(':cloud_with_rain:', use_aliases=True)
+        else:
+            icon = emoji.emojize(':sunny:', use_aliases=True)
+        return f'{data["request"]["query"]}:\n' \
                f'{icon}  {data["current"]["weather_descriptions"][0]}.  {data["current"]["temperature"]}°f (feels like {data["current"]["feelslike"]}°f). \
-                 {data["current"]["precip"]}% precipitation.'
-    return response
+               {data["current"]["precip"]}% precipitation.'
+    except HTTPError as e:
+        LOGGER.error(f'Failed to get weather for `{area}`: {e.response.content}')
+    return None
