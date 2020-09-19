@@ -13,6 +13,7 @@ chart-studio = "*"
 wikipedia-api = "*"
 imdbpy = "*"
 emoji = "*"
+simplejson = "*"
 python-dotenv = "*"
 
 [dev-packages]

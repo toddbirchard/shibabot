@@ -1,9 +1,11 @@
 """Create cloud-hosted Candlestick charts of company stock data."""
 from typing import Optional
 import requests
+from requests.exceptions import HTTPError
 import pandas as pd
 import plotly.graph_objects as go
 import chart_studio.plotly as py
+from shibabot.log import LOGGER
 
 
 class StockChartHandler:
@@ -13,47 +15,61 @@ class StockChartHandler:
         self.token = token
         self.endpoint = endpoint
 
-    def get_chart(self, symbol: str):
+    def get_chart(self, symbol: str) -> str:
         """Create chart of a company's 30-day stock performance."""
         message = self._get_price(symbol)
         chart = self._create_chart(symbol)
-        return f'{message} {chart}'
+        if message and chart:
+            return f'{message} {chart}'
+        return 'dats nought a stock symbol u RETART :@'
 
-    def _get_price(self, symbol: str):
+    def _get_price(self, symbol: str) -> Optional[str]:
         """Get daily price summary."""
         params = {'token': self.token}
-        req = requests.get(
-            f'{self.endpoint}{symbol}/quote',
-            params=params
-        )
-        if req.status_code == 200:
-            price = req.json().get('latestPrice', None)
-            company_name = req.json().get("companyName", None)
-            change = req.json().get("ytdChange", None)
-            if price and company_name:
-                message = f"{company_name}: Current price of ${price:.2f}."
-                if change:
-                    message = f"{company_name}: Current price of ${price:.2f}, change of {change:.2f}%"
-                return message
+        try:
+            req = requests.get(
+                f'{self.endpoint}{symbol}/quote',
+                params=params
+            )
+            if req.status_code == 200:
+                price = req.json().get('latestPrice', None)
+                company_name = req.json().get("companyName", None)
+                change = req.json().get("ytdChange", None)
+                if price and company_name:
+                    message = f"{company_name}: Current price of ${price:.2f}."
+                    if change:
+                        message = f"{company_name}: Current price of ${price:.2f}, change of {change:.2f}%"
+                    return message
+        except HTTPError as e:
+            LOGGER.error(f'Failed to fetch stock price for `{symbol}`: {e.response.content}')
         return None
 
-    def _get_chart_data(self, symbol: str) -> Optional[pd.DataFrame]:
+    def _get_chart_data(self, symbol: str) -> Optional[bytes]:
         """Fetch 30-day performance data from API."""
         params = {'token': self.token, 'includeToday': 'true'}
         url = f'{self.endpoint}{symbol}/chart/1m'
-        req = requests.get(url, params=params)
-        if req.status_code == 200:
-            stock_df = pd.read_json(req.content)
-            if stock_df.empty is False:
-                stock_df = stock_df.loc[stock_df['date'].dt.dayofweek < 5]
-                stock_df.set_index(keys=stock_df['date'], inplace=True)
-                return stock_df
+        try:
+            req = requests.get(url, params=params)
+            if req.status_code == 200 and req.content:
+                return req.content
+        except HTTPError as e:
+            LOGGER.error(f'Failed to fetch stock timeseries data for `{symbol}`: {e.response.content}')
         return None
 
+    @staticmethod
+    def _parse_chart_data(data: bytes) -> Optional[pd.DataFrame]:
+        """Parse JSON response into Pandas DataFrame"""
+        stock_df = pd.read_json(data)
+        stock_df = stock_df.loc[stock_df['date'].dt.dayofweek < 5]
+        stock_df.set_index(keys=stock_df['date'], inplace=True)
+        return stock_df
+
+    @LOGGER.catch
     def _create_chart(self, symbol: str) -> Optional[str]:
         """Create Plotly chart."""
-        stock_df = self._get_chart_data(symbol)
-        if stock_df.empty is False:
+        data = self._get_chart_data(symbol)
+        if bool(data):
+            stock_df = self._parse_chart_data(data)
             fig = go.Figure(data=[
                 go.Candlestick(
                     x=stock_df.index,

@@ -10,4 +10,14 @@ def bot_events(bot):
 		for guild in bot.guilds:
 			LOGGER.info(f'Connected to {guild.name}')
 
+	@bot.event
+	async def on_message(message):
+		"""Log chat messages"""
+		LOGGER.info(message)
+
+	@bot.event
+	async def on_error(event, *args):
+		"""Log chat messages"""
+		LOGGER.error(f'Unhandled error: {event} | args: {" ".join(args)}')
+
 	return bot
