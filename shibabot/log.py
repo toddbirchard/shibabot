@@ -11,7 +11,7 @@ def serialize(record):
         subset = {
             "time": record["time"].strftime("%m/%d/%Y, %H:%M:%S"),
             "message": record['message'].content,
-            "channel": record['message'].channel.name,
+            "room": record['message'].channel.name,
             "server": record['message'].guild.name,
             "user": record['message'].author.name,
         }
