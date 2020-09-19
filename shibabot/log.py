@@ -7,7 +7,7 @@ from config import ENVIRONMENT
 
 def serialize(record):
     """Construct JSON log record."""
-    if record['function'] == 'on_message':
+    if record['function'] == 'on_message' and record['message'].author.name != 'shibabot':
         subset = {
             "time": record["time"].strftime("%m/%d/%Y, %H:%M:%S"),
             "message": record['message'].content,
