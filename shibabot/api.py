@@ -1,4 +1,4 @@
-"""External APIs."""
+"""External API integrations."""
 from typing import Optional
 from random import randint
 import requests
@@ -62,7 +62,7 @@ def get_imdb_movie(movie_title) -> Optional[str]:
         genres = f"({', '.join(movie.data.get('genres'))}, {year})."
         title = f"{movie.data.get('title').upper()},"
         rating = f"{movie.data.get('rating')}/10"
-        boxoffice = get_imdb_boxoffice_data(movie)
+        box_office = imdb_box_office_data(movie)
         synopsis = movie.data.get('synopsis')
         if synopsis:
             try:
@@ -70,13 +70,24 @@ def get_imdb_movie(movie_title) -> Optional[str]:
                 synopsis = ' '.join(synopsis[0].split('. ')[:2])
             except KeyError as e:
                 LOGGER.error(f'IMDB movie `{title}` does not have a synopsis: {e}')
-        response = ' '.join(filter(None, [title, rating, genres, cast, director, synopsis, boxoffice, art]))
+        response = ' '.join(filter(
+            None, [
+                title,
+                rating,
+                genres,
+                cast,
+                director,
+                synopsis,
+                box_office,
+                art
+            ]
+        ))
         return response
     return None
 
 
 @LOGGER.catch
-def get_imdb_boxoffice_data(movie) -> Optional[str]:
+def imdb_box_office_data(movie) -> Optional[str]:
     """Get IMDB box office performance for a given film."""
     response = []
     if movie.data.get('box office', None):

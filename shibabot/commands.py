@@ -1,6 +1,7 @@
 """Register bot commands."""
 from datetime import datetime
 import pytz
+from discord.ext.commands import Bot
 from handlers import crypto_chart_handler, stock_chart_handler
 from .api import (
     get_giphy_image,
@@ -11,7 +12,7 @@ from .api import (
 )
 
 
-def bot_commands(bot):
+def bot_commands(bot) -> Bot:
     """Register user-triggered commands to chat bot."""
 
     @bot.command(name='420', help='Get time remaining until that time of day.')

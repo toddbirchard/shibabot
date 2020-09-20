@@ -5,7 +5,7 @@ from loguru import logger
 from config import ENVIRONMENT
 
 
-def serialize(record):
+def serialize(record: dict) -> str:
     """Construct JSON log record."""
     if record['function'] == 'on_message' and record['message'].author.name != 'shibabot':
         subset = {
@@ -23,8 +23,7 @@ def serialize(record):
     return json.dumps(subset)
 
 
-def formatter(record):
-    print('RECORD = ', record)
+def formatter(record: dict) -> str:
     record["extra"]["serialized"] = serialize(record)
     return "{extra[serialized]},\n"
 
