@@ -8,7 +8,7 @@ discord==1.0.1
 discord.py==1.4.1
 emoji==0.6.0
 idna==2.10
-IMDbPY==6.8
+IMDbPY==2020.9.25
 iniconfig==1.0.1
 loguru==0.5.2
 lxml==4.5.2
