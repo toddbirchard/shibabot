@@ -9,7 +9,7 @@ discord.py==1.4.1
 emoji==0.6.0
 idna==2.10
 IMDbPY==6.8
-iniconfig==1.0.1
+iniconfig==1.1.1
 loguru==0.5.2
 lxml==4.5.2
 more-itertools==8.5.0
