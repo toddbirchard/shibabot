@@ -14,9 +14,16 @@ from .log import LOGGER
 
 
 @LOGGER.catch
-def get_giphy_image(query) -> str:
-    """Search for Gif matching query."""
-    image = "No image found... lern2search smh"
+def get_giphy_image(query: str) -> str:
+    """
+    Search for Gif matching query.
+
+    :param query: Image search query
+    :type query: str
+
+    :returns: str
+    """
+    image = "No image found for `query`... lern2search smh."
     rand = randint(0, 20)
     params = {
         "api_key": GIPHY_API_KEY,
@@ -28,23 +35,44 @@ def get_giphy_image(query) -> str:
     }
     try:
         req = requests.get(GIPHY_API_ENDPOINT, params=params)
-        image = req.json()["data"]
+        image = req.json()["data"][0]["images"]["original"]["url"]
+        return image
+    except HTTPError as e:
+        LOGGER.error(e)
+        return image
     except KeyError as e:
         LOGGER.error(e)
-    return image
+        return image
+    except Exception as e:
+        LOGGER.error(e)
+        return image
 
 
 @LOGGER.catch
-def get_wiki_summary(query) -> str:
-    """Fetch Wikipedia summary for a given query."""
+def get_wiki_summary(query: str) -> str:
+    """
+    Fetch Wikipedia summary for a given query.
+
+    :param query: Wiki search query
+    :type query: str
+
+    :returns: str
+    """
     wiki = wikipediaapi.Wikipedia("en")
     page = wiki.page(query)
     return page.summary[0:300]
 
 
 @LOGGER.catch
-def get_imdb_movie(movie_title) -> Optional[str]:
-    """Get movie information from IMDB."""
+def get_imdb_movie(movie_title: str) -> Optional[str]:
+    """
+    Get movie information from IMDB.
+
+    :param movie_title: IMDB movie search query
+    :type movie_title: str
+
+    :returns: Optional[str]
+    """
     ia = IMDb()
     movie_id = None
     try:
@@ -80,7 +108,11 @@ def get_imdb_movie(movie_title) -> Optional[str]:
 
 @LOGGER.catch
 def imdb_box_office_data(movie) -> Optional[str]:
-    """Get IMDB box office performance for a given film."""
+    """
+    Get IMDB box office performance for a given film.
+
+    :returns: Optional[str]
+    """
     response = []
     if movie.data.get("box office", None):
         budget = movie.data["box office"].get("Budget", None)
@@ -99,8 +131,15 @@ def imdb_box_office_data(movie) -> Optional[str]:
 
 
 @LOGGER.catch
-def get_urban_definition(word) -> Optional[str]:
-    """Fetch UrbanDictionary word definition."""
+def get_urban_definition(word: str) -> Optional[str]:
+    """
+    Fetch UrbanDictionary word definition.
+
+    :param word: UD search query
+    :type word: str
+
+    :returns: Optional[str]
+    """
     params = {"term": word}
     headers = {"Content-Type": "application/json"}
     try:
@@ -118,14 +157,22 @@ def get_urban_definition(word) -> Optional[str]:
         LOGGER.error(
             f"Failed to get Urban definition for `{word}`: {e.response.content}"
         )
+        return f"I literally have no idea wtf ur tryna search for."
     return None
 
 
 @LOGGER.catch
-def get_weather(area) -> Optional[str]:
-    """Return temperature and weather per city/state/zip."""
+def get_weather(weather_area: str) -> str:
+    """
+    Return temperature and weather per city/state/zip.
+
+    :param weather_area: Weather search query
+    :type weather_area: str
+
+    :returns: str
+    """
     endpoint = "http://api.weatherstack.com/current"
-    params = {"access_key": WEATHERSTACK_API_KEY, "query": area, "units": "f"}
+    params = {"access_key": WEATHERSTACK_API_KEY, "query": weather_area, "units": "f"}
     try:
         req = requests.get(endpoint, params=params)
         data = req.json()
@@ -149,5 +196,7 @@ def get_weather(area) -> Optional[str]:
                {data["current"]["precip"]}% precipitation.'
         )
     except HTTPError as e:
-        LOGGER.error(f"Failed to get weather for `{area}`: {e.response.content}")
-    return None
+        LOGGER.error(
+            f"Failed to get weather for `{weather_area}`: {e.response.content}"
+        )
+        return f"I couldn't find shit for `{weather_area}` tf u searching for bruh."

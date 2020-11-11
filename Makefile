@@ -45,8 +45,6 @@ restart: env
 .PHONY: deploy
 deploy:
 	service $(PROJECTNAME) stop
-	git stash
-	git pull origin master
 	$(shell . ./deploy.sh)
 	service $(PROJECTNAME) start
 	service $(PROJECTNAME) status
@@ -61,7 +59,7 @@ update: env
 
 .PHONY: format
 format: env
-	$(shell . .venv/bin/activate && isort -rc ./)
+	$(shell . .venv/bin/activate && isort ./)
 	$(shell . .venv/bin/activate && black ./)
 
 

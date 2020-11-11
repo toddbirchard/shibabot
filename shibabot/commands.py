@@ -40,12 +40,8 @@ def bot_commands(bot) -> Bot:
     async def giphy_search(ctx, *args):
         """Giphy image search."""
         query = " ".join(args[:])
-        search_results = get_giphy_image(query)
-        if bool(search_results):
-            image = search_results[0]["images"]["original"]["url"]
-            await ctx.send(image)
-        else:
-            await ctx.send("image not found :(")
+        image = get_giphy_image(query)
+        await ctx.send(image)
 
     @bot.command(name="stock", help="Get 30-day stock performance.")
     async def stock(ctx, symbol: str):
