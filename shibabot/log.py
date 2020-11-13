@@ -11,14 +11,13 @@ def serialize(record: dict) -> str:
     """Construct JSON log record."""
     if (
         record["function"] == "on_message"
-        and record["message"].author.name != "shibabot"
     ):
         subset = {
             "time": record["time"].strftime("%m/%d/%Y, %H:%M:%S"),
             "message": record["message"].content,
-            "room": record["message"].channel.name,
-            "server": record["message"].guild.name,
-            "user": record["message"].author.name,
+            # "room": record["message"].channel.name,
+            # "server": record["message"].guild.name,
+            # "user": record["message"].author.name,
         }
         return json.dumps(subset)
     subset = {
