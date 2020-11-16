@@ -1,4 +1,5 @@
 """Create logger to catch and notify on failure."""
+import re
 import sys
 
 import simplejson as json
@@ -7,20 +8,8 @@ from loguru import logger
 from config import ENVIRONMENT
 
 
-def serialize(record: dict) -> str:
+def serialize_trace(record: dict) -> str:
     """Construct JSON log record."""
-    if (
-        record["function"] == "on_message"
-        and record["message"].author.name != "shibabot"
-    ):
-        subset = {
-            "time": record["time"].strftime("%m/%d/%Y, %H:%M:%S"),
-            "message": record["message"].content,
-            "room": record["message"].channel.name,
-            "server": record["message"].guild.name,
-            "user": record["message"].author.name,
-        }
-        return json.dumps(subset)
     subset = {
         "time": record["time"].strftime("%m/%d/%Y, %H:%M:%S"),
         "message": record["message"],
@@ -28,8 +17,29 @@ def serialize(record: dict) -> str:
     return json.dumps(subset)
 
 
+def serialize_info(record) -> str:
+    """Construct JSON log record."""
+    chat_data = re.findall(r"\[(\S+)\]", record["message"])
+    if bool(chat_data):
+        # server = chat_data[0]
+        # room = chat_data[1]
+        user = chat_data[0]
+        message = record["message"].split(":", 1)[1]
+        subset = {
+            "time": record["time"].strftime("%m/%d/%Y, %H:%M:%S"),
+            "message": message,
+            # "room": room,
+            # "server": server,
+            "user": user,
+        }
+        return json.dumps(subset)
+
+
 def formatter(record: dict) -> str:
-    record["extra"]["serialized"] = serialize(record)
+    if record["level"].name in ("TRACE", "ERROR"):
+        record["extra"]["serialized"] = serialize_trace(record)
+        return "{extra[serialized]},\n"
+    record["extra"]["serialized"] = serialize_info(record)
     return "{extra[serialized]},\n"
 
 
