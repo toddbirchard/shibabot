@@ -11,7 +11,7 @@ emoji==0.6.0
 idna==2.10
 imdbpy==2020.9.25
 loguru==0.5.3
-lxml==4.6.1
+lxml==4.6.2
 multidict==4.7.6
 numpy==1.19.4
 pandas==1.1.4
