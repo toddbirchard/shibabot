@@ -10,6 +10,7 @@ make restart    - Purge cache & reinstall modules.
 make deploy     - Pull latest build and deploy to production.
 make update     - Update pip dependencies via Python Poetry.
 make format     - Format code with Python's `Black` library.
+make lint       - Check code formatting with flake8
 make clean      - Remove cached files and lock files.
 endef
 export HELP
@@ -63,9 +64,16 @@ format: env
 	$(shell . .venv/bin/activate && black ./)
 
 
+.PHONY: lint
+lint:
+	flake8 ./app --count --select=E9,F63,F7,F82 --show-source --statistics
+
+
 .PHONY: clean
 clean:
 	find . -name '*.pyc' -delete
 	find . -name '__pycache__' -delete
 	find . -name 'poetry.lock' -delete
 	find . -name 'Pipefile.lock' -delete
+	find . -name 'logs/*' -delete
+	find . -name '.pytest_cache' -delete

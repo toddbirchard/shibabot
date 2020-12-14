@@ -10,7 +10,7 @@ from requests.exceptions import HTTPError
 
 from config import GIPHY_API_ENDPOINT, GIPHY_API_KEY, WEATHERSTACK_API_KEY
 
-from .log import LOGGER
+from shibabot.log import LOGGER
 
 
 @LOGGER.catch

@@ -19,6 +19,7 @@ def serialize_trace(record: dict) -> str:
 
 def serialize_info(record) -> str:
     """Construct JSON log record."""
+    print(record)
     chat_data = re.findall(r"\[(\S+)\]", record["message"])
     if bool(chat_data):
         # server = chat_data[0]

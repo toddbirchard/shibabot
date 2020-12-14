@@ -1,7 +1,5 @@
 """Application entry point."""
 from shibabot import create_bot
 
-bot = create_bot()
-
 if __name__ == "__main__":
-    bot
+    create_bot()

@@ -1,7 +1,7 @@
 """Room events."""
 from discord.ext.commands import Bot
 
-from .log import LOGGER
+from shibabot.log import LOGGER
 
 
 def bot_events(bot) -> Bot:
