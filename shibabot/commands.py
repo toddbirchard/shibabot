@@ -4,7 +4,7 @@ from datetime import datetime
 import pytz
 from discord.ext.commands import Bot
 
-from handlers import crypto_chart_handler, stock_chart_handler
+from clients import crypto_chart_handler, stock_chart_handler
 
 from .api import (
     get_giphy_image,

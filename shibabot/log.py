@@ -1,6 +1,6 @@
 """Create logger to catch and notify on failure."""
 import re
-import sys
+from sys import stdout
 
 import simplejson as json
 from loguru import logger
@@ -19,21 +19,14 @@ def serialize_trace(record: dict) -> str:
 
 def serialize_info(record) -> str:
     """Construct JSON log record."""
-    print(record)
-    chat_data = re.findall(r"\[(\S+)\]", record["message"])
-    if bool(chat_data):
-        # server = chat_data[0]
-        # room = chat_data[1]
-        user = chat_data[0]
-        message = record["message"].split(":", 1)[1]
-        subset = {
-            "time": record["time"].strftime("%m/%d/%Y, %H:%M:%S"),
-            "message": message,
-            # "room": room,
-            # "server": server,
-            "user": user,
-        }
-        return json.dumps(subset)
+    subset = {
+        "time": record["time"].strftime("%m/%d/%Y, %H:%M:%S"),
+        "message": record["message"],
+        # "room": room,
+        # "server": server,
+        # "user": user,
+    }
+    return json.dumps(subset)
 
 
 def formatter(record: dict) -> str:
@@ -47,29 +40,31 @@ def formatter(record: dict) -> str:
 def create_logger() -> logger:
     """Customer logger creation."""
     logger.remove()
+    logger.add(
+        stdout,
+        colorize=True,
+        format="<light-cyan>{time:MM-DD-YYYY HH:mm:ss}</light-cyan>"
+        + " | <light-green>{level}</light-green>: "
+        + " <light-white>{message}</light-white>",
+    )
     if ENVIRONMENT == "production":
-        # Datadog
-        logger.add("logs/info.json", format=formatter, level="INFO")
-        logger.add("logs/errors.json", format=formatter, level="ERROR")
-    else:
-        logger.add(sys.stdout, format=formatter, level="INFO")
-        logger.add(sys.stderr, format=formatter, level="ERROR")
         logger.add(
-            sys.stdout,
-            colorize=True,
-            format="<light-cyan>{time:MM-DD-YYYY HH:mm:ss}</light-cyan>"
-            + " | <light-green>{level}</light-green>: "
-            + " <light-white>{message}</light-white>",
-            level="INFO",
+            "/var/log/shibabot/info.json",
+            format=formatter,
+            rotation="300 MB",
+            compression="zip",
+            catch=True,
         )
         logger.add(
-            sys.stderr,
+            "/var/log/shibabot/error.log",
             colorize=True,
-            format="<light-cyan>{time:MM-DD-YYYY HH:mm:ss}</light-cyan>"
-            + " | <light-red>{level}</light-red>: "
-            + " <light-white>{message}</light-white>",
             catch=True,
             level="ERROR",
+            format="<light-cyan>{time:MM-DD-YYYY HH:mm:ss}</light-cyan> | "
+            + "<red>{level}</red>: "
+            + "<light-white>{message}</light-white>",
+            rotation="300 MB",
+            compression="zip",
         )
     return logger
 

@@ -1,4 +1,4 @@
-"""Initiate handlers."""
+"""Initiate clients."""
 import chart_studio
 
 from config import (
@@ -19,7 +19,7 @@ chart_studio.tools.set_credentials_file(
     username=PLOTLY_USERNAME, api_key=PLOTLY_API_KEY
 )
 
-# Create handlers
+# Create clients
 stock_chart_handler = StockChartHandler(token=IEX_API_TOKEN, endpoint=IEX_API_BASE_URL)
 
 crypto_chart_handler = CryptoChartHandler(

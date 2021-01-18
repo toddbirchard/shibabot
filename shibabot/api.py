@@ -9,21 +9,18 @@ from imdb import IMDb, IMDbError
 from requests.exceptions import HTTPError
 
 from config import GIPHY_API_ENDPOINT, GIPHY_API_KEY, WEATHERSTACK_API_KEY
-
 from shibabot.log import LOGGER
 
 
-@LOGGER.catch
 def get_giphy_image(query: str) -> str:
     """
     Search for Gif matching query.
 
     :param query: Image search query
     :type query: str
-
     :returns: str
     """
-    image = "No image found for `query`... lern2search smh."
+    error_message = "No image found for `query` lern2search smh."
     rand = randint(0, 20)
     params = {
         "api_key": GIPHY_API_KEY,
@@ -39,38 +36,34 @@ def get_giphy_image(query: str) -> str:
         return image
     except HTTPError as e:
         LOGGER.error(e)
-        return image
+        return error_message
     except KeyError as e:
         LOGGER.error(e)
-        return image
+        return error_message
     except Exception as e:
         LOGGER.error(e)
-        return image
+        return error_message
 
 
-@LOGGER.catch
 def get_wiki_summary(query: str) -> str:
     """
     Fetch Wikipedia summary for a given query.
 
     :param query: Wiki search query
     :type query: str
-
     :returns: str
     """
     wiki = wikipediaapi.Wikipedia("en")
     page = wiki.page(query)
-    return page.summary[0:300]
+    return page.summary[0:1000]
 
 
-@LOGGER.catch
 def get_imdb_movie(movie_title: str) -> Optional[str]:
     """
     Get movie information from IMDB.
 
     :param movie_title: IMDB movie search query
     :type movie_title: str
-
     :returns: Optional[str]
     """
     ia = IMDb()
@@ -106,7 +99,6 @@ def get_imdb_movie(movie_title: str) -> Optional[str]:
     return None
 
 
-@LOGGER.catch
 def imdb_box_office_data(movie) -> Optional[str]:
     """
     Get IMDB box office performance for a given film.
@@ -130,14 +122,12 @@ def imdb_box_office_data(movie) -> Optional[str]:
     return None
 
 
-@LOGGER.catch
 def get_urban_definition(word: str) -> Optional[str]:
     """
     Fetch UrbanDictionary word definition.
 
     :param word: UD search query
     :type word: str
-
     :returns: Optional[str]
     """
     params = {"term": word}
@@ -157,18 +147,16 @@ def get_urban_definition(word: str) -> Optional[str]:
         LOGGER.error(
             f"Failed to get Urban definition for `{word}`: {e.response.content}"
         )
-        return f"I literally have no idea wtf ur tryna search for."
+        return f"I have no idea wtf ur tryna search for tbh."
     return None
 
 
-@LOGGER.catch
 def get_weather(weather_area: str) -> str:
     """
     Return temperature and weather per city/state/zip.
 
     :param weather_area: Weather search query
     :type weather_area: str
-
     :returns: str
     """
     endpoint = "http://api.weatherstack.com/current"
@@ -200,3 +188,8 @@ def get_weather(weather_area: str) -> str:
             f"Failed to get weather for `{weather_area}`: {e.response.content}"
         )
         return f"I couldn't find shit for `{weather_area}` tf u searching for bruh."
+    except Exception as e:
+        LOGGER.error(
+            f"Unexpected exception when fetching weather for `{weather_area}`: {e}"
+        )
+        return f"aw shit I just broke :("
