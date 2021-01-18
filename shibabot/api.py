@@ -2,13 +2,13 @@
 from random import randint
 from typing import Optional
 
-import emoji
 import requests
 import wikipediaapi
+from emoji import emojize
 from imdb import IMDb, IMDbError
 from requests.exceptions import HTTPError
 
-from config import GIPHY_API_ENDPOINT, GIPHY_API_KEY, WEATHERSTACK_API_KEY
+from config import GIPHY_API_KEY, WEATHERSTACK_API_KEY
 from shibabot.log import LOGGER
 
 
@@ -20,7 +20,6 @@ def get_giphy_image(query: str) -> str:
     :type query: str
     :returns: str
     """
-    error_message = "No image found for `query` lern2search smh."
     rand = randint(0, 20)
     params = {
         "api_key": GIPHY_API_KEY,
@@ -31,18 +30,33 @@ def get_giphy_image(query: str) -> str:
         "lang": "en",
     }
     try:
-        req = requests.get(GIPHY_API_ENDPOINT, params=params)
-        image = req.json()["data"][0]["images"]["original"]["url"]
+        req = requests.get("https://api.giphy.com/v1/gifs/search", params=params)
+        if req.status_code != 200 or bool(req.json()["data"]) is False:
+            return "image not found :("
+        image = req.json()["data"][0]["images"]["downsized"]["url"]
         return image
     except HTTPError as e:
-        LOGGER.error(e)
-        return error_message
+        LOGGER.error(f"Giphy failed to fetch `{query}`: {e.response.content}")
+        return emojize(
+            f":warning: yoooo giphy is down rn lmao :warning:", use_aliases=True
+        )
     except KeyError as e:
-        LOGGER.error(e)
-        return error_message
+        LOGGER.error(f"Giphy KeyError for `{query}`: {e}")
+        return emojize(
+            f":warning: holy sht u broke the bot im telling bro :warning:",
+            use_aliases=True,
+        )
+    except IndexError as e:
+        LOGGER.error(f"Giphy IndexError for `{query}`: {e}")
+        return emojize(
+            f":warning: holy sht u broke the bot im telling bro :warning:",
+            use_aliases=True,
+        )
     except Exception as e:
-        LOGGER.error(e)
-        return error_message
+        LOGGER.error(f"Giphy unexpected error for `{query}`: {e}")
+        return emojize(
+            f":warning: AAAAAA I'M BROKEN WHAT DID YOU DO :warning:", use_aliases=True
+        )
 
 
 def get_wiki_summary(query: str) -> str:
@@ -96,7 +110,6 @@ def get_imdb_movie(movie_title: str) -> Optional[str]:
             )
         )
         return response
-    return None
 
 
 def imdb_box_office_data(movie) -> Optional[str]:
@@ -119,7 +132,6 @@ def imdb_box_office_data(movie) -> Optional[str]:
         if gross:
             response.append(f"CUMULATIVE WORLDWIDE GROSS {gross}.")
         return " ".join(response)
-    return None
 
 
 def get_urban_definition(word: str) -> Optional[str]:
@@ -145,51 +157,73 @@ def get_urban_definition(word: str) -> Optional[str]:
             return f"{word}: {definition}. EXAMPLE: {example}."
     except HTTPError as e:
         LOGGER.error(
-            f"Failed to get Urban definition for `{word}`: {e.response.content}"
+            f"HTTPError while trying to get Urban definition for `{word}`: {e.response.content}"
         )
-        return f"I have no idea wtf ur tryna search for tbh."
-    return None
+        return emojize(
+            f":warning: wtf urban dictionary is down :warning:", use_aliases=True
+        )
+    except KeyError as e:
+        LOGGER.error(f"KeyError error when fetching Urban definition for `{word}`: {e}")
+        return emojize(":warning: mfer you broke bot :warning:", use_aliases=True)
+    except IndexError as e:
+        LOGGER.error(
+            f"IndexError error when fetching Urban definition for `{word}`: {e}"
+        )
+        return emojize(":warning: mfer you broke bot :warning:", use_aliases=True)
+    except Exception as e:
+        LOGGER.error(
+            f"Unexpected error when fetching Urban definition for `{word}`: {e}"
+        )
+        return emojize(":warning: mfer you broke bot :warning:", use_aliases=True)
 
 
-def get_weather(weather_area: str) -> str:
+def get_weather(location: str) -> str:
     """
     Return temperature and weather per city/state/zip.
 
-    :param weather_area: Weather search query
-    :type weather_area: str
+    :param location: Weather search query
+    :type location: str
     :returns: str
     """
     endpoint = "http://api.weatherstack.com/current"
-    params = {"access_key": WEATHERSTACK_API_KEY, "query": weather_area, "units": "f"}
+    params = {"access_key": WEATHERSTACK_API_KEY, "query": location, "units": "f"}
     try:
         req = requests.get(endpoint, params=params)
         data = req.json()
         condition = data["current"]["weather_descriptions"][0]
         icon_name = condition.lower()
         if "lightning" in icon_name or "storm" in icon_name:
-            icon = emoji.emojize(":cloud_with_lightning_and_rain:", use_aliases=True)
+            icon = emojize(":cloud_with_lightning_and_rain:", use_aliases=True)
         elif "snow" in icon_name or "ice" in icon_name:
-            icon = emoji.emojize(":snowflake:", use_aliases=True)
+            icon = emojize(":snowflake:", use_aliases=True)
         elif "rain" in icon_name or "showers" in icon_name:
-            icon = emoji.emojize(":cloud_with_rain:", use_aliases=True)
+            icon = emojize(":cloud_with_rain:", use_aliases=True)
         elif "cloudy" in icon_name or "partly" in icon_name:
-            icon = emoji.emojize(":partly_sunny:", use_aliases=True)
+            icon = emojize(":partly_sunny:", use_aliases=True)
         elif "cloud" in icon_name or "fog" in icon_name:
-            icon = emoji.emojize(":cloud_with_rain:", use_aliases=True)
+            icon = emojize(":cloud_with_rain:", use_aliases=True)
         else:
-            icon = emoji.emojize(":sunny:", use_aliases=True)
+            icon = emojize(":sunny:", use_aliases=True)
         return (
             f'{data["request"]["query"]}:\n'
             f'{icon}  {data["current"]["weather_descriptions"][0]}.  {data["current"]["temperature"]}°f (feels like {data["current"]["feelslike"]}°f). \
                {data["current"]["precip"]}% precipitation.'
         )
     except HTTPError as e:
-        LOGGER.error(
-            f"Failed to get weather for `{weather_area}`: {e.response.content}"
+        LOGGER.error(f"Failed to get weather for `{location}`: {e.response.content}")
+        return emojize(
+            f":warning:️️ fk me the weather API is down :warning:",
+            use_aliases=True,
         )
-        return f"I couldn't find shit for `{weather_area}` tf u searching for bruh."
+    except KeyError as e:
+        LOGGER.error(f"KeyError while fetching weather for `{location}`: {e}")
+        return emojize(
+            f":warning:️️ omfg u broke the bot WHAT DID YOU DO IM DEAD AHHHHHH :warning:",
+            use_aliases=True,
+        )
     except Exception as e:
-        LOGGER.error(
-            f"Unexpected exception when fetching weather for `{weather_area}`: {e}"
+        LOGGER.error(f"Failed to get weather for `{location}`: {e}")
+        return emojize(
+            f":warning:️️ omfg u broke the bot WHAT DID YOU DO IM DEAD AHHHHHH :warning:",
+            use_aliases=True,
         )
-        return f"aw shit I just broke :("

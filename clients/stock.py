@@ -1,4 +1,4 @@
-"""Create cloud-hosted Candlestick charts of company stock data."""
+"""Cloud-hosted Candlestick charts of company stock data."""
 from typing import Optional
 
 import chart_studio.plotly as py
@@ -43,7 +43,10 @@ class StockChartHandler:
             LOGGER.error(
                 f"Failed to fetch stock price for `{symbol}`: {e.response.content}"
             )
-        return None
+        except Exception as e:
+            LOGGER.error(
+                f"Unexpected exception while fetching stock price for `{symbol}`: {e}"
+            )
 
     def _get_chart_data(self, symbol: str) -> Optional[bytes]:
         """Fetch 30-day performance data from API."""
@@ -57,7 +60,10 @@ class StockChartHandler:
             LOGGER.error(
                 f"Failed to fetch stock timeseries data for `{symbol}`: {e.response.content}"
             )
-        return None
+        except Exception as e:
+            LOGGER.error(
+                f"Unexpected exception while fetching timeseries data for `{symbol}`: {e}"
+            )
 
     @staticmethod
     def _parse_chart_data(data: bytes) -> Optional[pd.DataFrame]:
@@ -131,4 +137,3 @@ class StockChartHandler:
             )
             chart_image = chart[:-1] + ".png"
             return chart_image
-        return None

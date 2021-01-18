@@ -1,4 +1,4 @@
-"""Create cloud-hosted Candlestick charts of company stock data."""
+"""Cloud-hosted Candlestick charts of crypto performance."""
 from datetime import datetime
 from typing import Optional
 
@@ -27,7 +27,7 @@ class CryptoChartHandler:
             return f"{message} {chart}"
         return "dats nought a stock symbol u RETART :@"
 
-    def _get_price(self, symbol) -> Optional[str]:
+    def _get_price(self, symbol: str) -> Optional[str]:
         """Get crypto price for provided ticker label."""
         endpoint = f"{self.price_endpoint}{symbol.lower()}usd/summary"
         try:
@@ -50,7 +50,10 @@ class CryptoChartHandler:
             LOGGER.error(
                 f"Failed to fetch crypto price for `{symbol}`: {e.response.content}"
             )
-        return None
+        except Exception as e:
+            LOGGER.error(
+                f"Unexpected error when fetching crypto price for `{symbol}`: {e}"
+            )
 
     def _get_chart_data(self, symbol: str) -> Optional[dict]:
         """Fetch 60-day crypto prices."""
@@ -68,15 +71,17 @@ class CryptoChartHandler:
             LOGGER.error(
                 f"Failed to fetch crypto data for `{symbol}`: {e.response.content}"
             )
-        return None
+        except Exception as e:
+            LOGGER.error(
+                f"Unexpected error when fetching crypto data for `{symbol}`: {e}"
+            )
 
     @staticmethod
     def _parse_chart_data(data: dict) -> Optional[pd.DataFrame]:
         """Parse JSON response into Pandas DataFrame"""
-        df = pd.DataFrame.from_dict(
+        return pd.DataFrame.from_dict(
             data["Time Series (Digital Currency Daily)"], orient="index"
         )[:60]
-        return df
 
     @LOGGER.catch
     def _create_chart(self, symbol: str) -> Optional[str]:
@@ -143,4 +148,3 @@ class CryptoChartHandler:
             )
             chart_image = chart[:-1] + ".png"
             return chart_image
-        return None
