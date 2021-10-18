@@ -7,7 +7,7 @@ chart-studio==1.1.0
 colorama==0.4.4; python_version >= "3.5" and python_full_version < "3.0.0" and sys_platform == "win32" or sys_platform == "win32" and python_version >= "3.5" and python_full_version >= "3.5.0"
 discord.py==1.6.0; python_full_version >= "3.5.3"
 discord==1.0.1
-emoji==0.6.0
+emoji==1.6.1
 idna==2.10; python_version >= "3.6" and python_full_version >= "3.5.3"
 imdbpy==2020.9.25
 loguru==0.5.3; python_version >= "3.5"
