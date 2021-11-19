@@ -8,14 +8,6 @@ from loguru import logger
 
 from config import ENVIRONMENT
 
-DD_APM_FORMAT = (
-    "%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] "
-    "[dd.service=%(dd.service)s dd.env=%(dd.env)s "
-    "dd.version=%(dd.version)s "
-    "dd.trace_id=%(dd.trace_id)s dd.span_id=%(dd.span_id)s]"
-    "- %(message)s"
-)
-
 
 def json_formatter(record: dict):
     """
@@ -34,8 +26,8 @@ def json_formatter(record: dict):
             "time": log["time"].strftime("%m/%d/%Y, %H:%M:%S"),
             "message": log["message"],
             "level": log["level"].name,
-            "function": log.get("function"),
-            "module": log.get("name"),
+            # "function": log.get("function"),
+            # "module": log.get("name"),
         }
         if log.get("exception", None):
             subset.update({"exception": log["exception"]})

@@ -31,7 +31,7 @@ all help:
 
 .PHONY: run
 run: env
-	if [[ "./wsgi.py" ]]; then service $(PROJECT_NAME) start; else $(LOCAL_PYTHON) wsgi.py; fi
+	if [[ "./wsgi.py" ]]; then $(LOCAL_PYTHON) wsgi.py; fi
 
 
 .PHONY: install

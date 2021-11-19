@@ -16,7 +16,7 @@ keywords = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 discord = "*"
 requests = "*"
 loguru = "*"
@@ -26,7 +26,6 @@ chart-studio = "*"
 wikipedia-api = "*"
 imdbpy = "*"
 emoji = "*"
-simplejson = "*"
 python-dotenv = "*"
 uwsgi = "*"
 
@@ -44,6 +43,6 @@ run = "wsgi:start"
 issues = "https://github.com/toddbirchard/shibabot/issues"
 
 [build-system]
-requires = ["poetry>=0.12"]
+requires = ["poetry>=1.1.11"]
 build-backend = "poetry.masonry.api"
 
