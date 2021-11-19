@@ -102,12 +102,12 @@ def create_logger() -> logger:
             catch=True,
         )
         # Datadog APM tracing
-        logger.add(
+        '''logger.add(
             "/var/log/shibabot/apm.log",
             format=DD_APM_FORMAT,
             rotation="200 MB",
             compression="zip",
-        )
+        )'''
         logger.add(
             "/var/log/shibabot/info.log",
             colorize=True,
