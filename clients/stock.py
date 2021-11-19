@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 import requests
 from requests.exceptions import HTTPError
 
-from shibabot.log import LOGGER
+from log import LOGGER
 
 
 class StockChartHandler:

@@ -9,7 +9,7 @@ from imdb import IMDb, IMDbError
 from requests.exceptions import HTTPError
 
 from config import GIPHY_API_KEY, WEATHERSTACK_API_KEY
-from shibabot.log import LOGGER
+from log import LOGGER
 
 
 def get_giphy_image(query: str) -> str:

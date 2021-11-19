@@ -28,12 +28,14 @@ imdbpy = "*"
 emoji = "*"
 simplejson = "*"
 python-dotenv = "*"
+uwsgi = "*"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
 mypy = "*"
-black = "^20.8b1"
-isort = "^5.6.4"
+black = "21.10b0"
+isort = "5.10.1"
+flake8 = "^4.0.1"
 
 [tool.poetry.scripts]
 run = "wsgi:start"
