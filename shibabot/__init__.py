@@ -1,8 +1,8 @@
 """Initialize bot."""
 from discord.ext.commands import Bot
 
-from .commands import bot_commands
-from .events import bot_events
+from shibabot.commands import bot_commands
+from shibabot.events import bot_events
 
 
 def create_bot() -> Bot:
