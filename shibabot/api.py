@@ -157,7 +157,9 @@ def get_urban_definition(word: str) -> Optional[str]:
             f":warning: wtf urban dictionary is down :warning:", use_aliases=True
         )
     except LookupError as e:
-        LOGGER.error(f"LookupError error when fetching Urban definition for `{word}`: {e}")
+        LOGGER.error(
+            f"LookupError error when fetching Urban definition for `{word}`: {e}"
+        )
         return emojize(":warning: mfer you broke bot :warning:", use_aliases=True)
     except Exception as e:
         LOGGER.error(

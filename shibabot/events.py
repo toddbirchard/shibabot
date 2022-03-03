@@ -12,13 +12,13 @@ def bot_events(bot) -> Bot:
         """Confirm bot is connected."""
         for guild in bot.guilds:
             LOGGER.success(f"Connected to {guild.name}")
+        LOGGER.info(f"Available commands: {bot.all_commands.keys()}")
 
     @bot.event
     async def on_message(message) -> None:
         """Log chat messages"""
-        if bot.user.name != "shibabot":
-            #  print(bot.__dict__.keys())
-            LOGGER.info(f"[{bot.user.name}]: {message}")
+        # print(bot.__dict__.keys())
+        LOGGER.info(f"[{bot.user.name}]: {message}")
 
     @bot.event
     async def on_error(event, *args) -> None:

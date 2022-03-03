@@ -5,6 +5,7 @@ import pytz
 from discord.ext.commands import Bot
 
 from clients import crypto_chart_handler, stock_chart_handler
+from log import LOGGER
 
 from .api import (
     get_giphy_image,
@@ -21,6 +22,7 @@ def bot_commands(bot) -> Bot:
     @bot.command(name="420", help="Get time remaining until that time of day.")
     async def time_remaining(ctx):
         """Get remaining time until target time."""
+        LOGGER.info("Test")
         now = datetime.now(tz=pytz.timezone("America/New_York"))
         am_time = now.replace(hour=4, minute=20, second=0)
         pm_time = now.replace(hour=16, minute=20, second=0)

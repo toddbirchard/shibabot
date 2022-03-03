@@ -1,9 +1,9 @@
 """Create logger to catch and notify on failure."""
+import json
 import re
 from os import path
 from sys import stdout
 
-import json
 from loguru import logger
 
 from config import ENVIRONMENT
@@ -117,12 +117,12 @@ def create_logger() -> logger:
             catch=True,
         )
         # Datadog APM tracing
-        '''logger.add(
+        """logger.add(
             "/var/log/shibabot/apm.log",
             format=DD_APM_FORMAT,
             rotation="200 MB",
             compression="zip",
-        )'''
+        )"""
         logger.add(
             "/var/log/shibabot/info.log",
             colorize=True,
