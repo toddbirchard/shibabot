@@ -16,7 +16,7 @@ from .api import (
 
 
 def bot_commands(bot) -> Bot:
-    """Register user-triggered commands to chat bot."""
+    """Register user-triggered commands to chatbot."""
 
     @bot.command(name="420", help="Get time remaining until that time of day.")
     async def time_remaining(ctx):

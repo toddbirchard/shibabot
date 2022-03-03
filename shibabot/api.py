@@ -16,8 +16,8 @@ def get_giphy_image(query: str) -> str:
     """
     Search for Gif matching query.
 
-    :param query: Image search query
-    :type query: str
+    :param str query: Image search query
+
     :returns: str
     """
     rand = randint(0, 20)
@@ -40,14 +40,8 @@ def get_giphy_image(query: str) -> str:
         return emojize(
             f":warning: yoooo giphy is down rn lmao :warning:", use_aliases=True
         )
-    except KeyError as e:
+    except LookupError as e:
         LOGGER.error(f"Giphy KeyError for `{query}`: {e}")
-        return emojize(
-            f":warning: holy sht u broke the bot im telling bro :warning:",
-            use_aliases=True,
-        )
-    except IndexError as e:
-        LOGGER.error(f"Giphy IndexError for `{query}`: {e}")
         return emojize(
             f":warning: holy sht u broke the bot im telling bro :warning:",
             use_aliases=True,
@@ -63,8 +57,8 @@ def get_wiki_summary(query: str) -> str:
     """
     Fetch Wikipedia summary for a given query.
 
-    :param query: Wiki search query
-    :type query: str
+    :param str query: Wiki search query
+
     :returns: str
     """
     wiki = wikipediaapi.Wikipedia("en")
@@ -76,8 +70,8 @@ def get_imdb_movie(movie_title: str) -> Optional[str]:
     """
     Get movie information from IMDB.
 
-    :param movie_title: IMDB movie search query
-    :type movie_title: str
+    :param str movie_title: IMDB movie search query
+
     :returns: Optional[str]
     """
     ia = IMDb()
@@ -138,8 +132,8 @@ def get_urban_definition(word: str) -> Optional[str]:
     """
     Fetch UrbanDictionary word definition.
 
-    :param word: UD search query
-    :type word: str
+    :param str word: UD search query
+
     :returns: Optional[str]
     """
     params = {"term": word}
@@ -162,13 +156,8 @@ def get_urban_definition(word: str) -> Optional[str]:
         return emojize(
             f":warning: wtf urban dictionary is down :warning:", use_aliases=True
         )
-    except KeyError as e:
-        LOGGER.error(f"KeyError error when fetching Urban definition for `{word}`: {e}")
-        return emojize(":warning: mfer you broke bot :warning:", use_aliases=True)
-    except IndexError as e:
-        LOGGER.error(
-            f"IndexError error when fetching Urban definition for `{word}`: {e}"
-        )
+    except LookupError as e:
+        LOGGER.error(f"LookupError error when fetching Urban definition for `{word}`: {e}")
         return emojize(":warning: mfer you broke bot :warning:", use_aliases=True)
     except Exception as e:
         LOGGER.error(
@@ -181,8 +170,8 @@ def get_weather(location: str) -> str:
     """
     Return temperature and weather per city/state/zip.
 
-    :param location: Weather search query
-    :type location: str
+    :param str location: Weather search query
+
     :returns: str
     """
     endpoint = "http://api.weatherstack.com/current"
@@ -215,8 +204,8 @@ def get_weather(location: str) -> str:
             f":warning:️️ fk me the weather API is down :warning:",
             use_aliases=True,
         )
-    except KeyError as e:
-        LOGGER.error(f"KeyError while fetching weather for `{location}`: {e}")
+    except LookupError as e:
+        LOGGER.error(f"LookupError while fetching weather for `{location}`: {e}")
         return emojize(
             f":warning:️️ omfg u broke the bot WHAT DID YOU DO IM DEAD AHHHHHH :warning:",
             use_aliases=True,

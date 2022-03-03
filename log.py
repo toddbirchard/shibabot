@@ -22,18 +22,41 @@ def json_formatter(record: dict):
 
         :param dict log: Dictionary containing logged message with metadata.
         """
+        try:
+            subset = {
+                "time": log["time"].strftime("%m/%d/%Y, %H:%M:%S"),
+                "message": log["message"],
+                "level": log["level"].name,
+                # "function": log.get("function"),
+                # "module": log.get("name"),
+            }
+            if log.get("exception", None):
+                subset.update({"exception": log["exception"]})
+            return json.dumps(subset)
+        except Exception as e:
+            log["error"] = f"Logging error occurred: {e}"
+            return serialize_error(log)
+
+    def serialize_error(log: dict) -> str:
+        """
+        Construct error log record.
+
+        :param dict log: Dictionary containing logged message with metadata.
+
+        :returns: str
+        """
         subset = {
             "time": log["time"].strftime("%m/%d/%Y, %H:%M:%S"),
-            "message": log["message"],
             "level": log["level"].name,
-            # "function": log.get("function"),
-            # "module": log.get("name"),
+            "message": log["message"],
         }
-        if log.get("exception", None):
-            subset.update({"exception": log["exception"]})
         return json.dumps(subset)
 
-    record["extra"]["serialized"] = serialize(record)
+    if record["level"].name == "ERROR":
+        record["extra"]["serialized"] = serialize_error(record)
+    else:
+        record["extra"]["serialized"] = serialize(record)
+
     return "{extra[serialized]},\n"
 
 
@@ -66,26 +89,26 @@ def log_formatter(record: dict) -> str:
 
     :returns: str
     """
-    if record["level"].name == "INFO":
-        return "<fg #5278a3>{time:MM-DD-YYYY HH:mm:ss}</fg #5278a3> | <fg #b3cfe7>{level}</fg #b3cfe7>: <light-white>{message}</light-white>\n"
+    if record["level"].name == "TRACE":
+        return "<fg #70acde>{time:MM-DD-YYYY HH:mm:ss}</fg #70acde> | <fg #cfe2f3>{level}</fg #cfe2f3>: <light-white>{message}</light-white>\n"
+    elif record["level"].name == "INFO":
+        return "<fg #70acde>{time:MM-DD-YYYY HH:mm:ss}</fg #70acde> | <fg #9cbfdd>{level}</fg #9cbfdd>: <light-white>{message}</light-white>\n"
+    elif record["level"].name == "DEBUG":
+        return "<fg #70acde>{time:MM-DD-YYYY HH:mm:ss}</fg #70acde> | <fg #8598ea>{level}</fg #8598ea>: <light-white>{message}</light-white>\n"
     elif record["level"].name == "WARNING":
-        return "<fg #5278a3>{time:MM-DD-YYYY HH:mm:ss}</fg #5278a3> |  <fg #b09057>{level}</fg #b09057>: <light-white>{message}</light-white>\n"
+        return "<fg #70acde>{time:MM-DD-YYYY HH:mm:ss}</fg #70acde> |  <fg #dcad5a>{level}</fg #dcad5a>: <light-white>{message}</light-white>\n"
     elif record["level"].name == "SUCCESS":
-        return "<fg #5278a3>{time:MM-DD-YYYY HH:mm:ss}</fg #5278a3> | <fg #6dac77>{level}</fg #6dac77>: <light-white>{message}</light-white>\n"
+        return "<fg #70acde>{time:MM-DD-YYYY HH:mm:ss}</fg #70acde> | <fg #3dd08d>{level}</fg #3dd08d>: <light-white>{message}</light-white>\n"
     elif record["level"].name == "ERROR":
-        return "<fg #5278a3>{time:MM-DD-YYYY HH:mm:ss}</fg #5278a3> | <fg #a35252>{level}</fg #a35252>: <light-white>{message}</light-white>\n"
-    return "<fg #5278a3>{time:MM-DD-YYYY HH:mm:ss}</fg #5278a3> | <fg #b3cfe7>{level}</fg #b3cfe7>: <light-white>{message}</light-white>\n"
+        return "<fg #70acde>{time:MM-DD-YYYY HH:mm:ss}</fg #70acde> | <fg #ae2c2c>{level}</fg #ae2c2c>: <light-white>{message}</light-white>\n"
+    return "<fg #70acde>{time:MM-DD-YYYY HH:mm:ss}</fg #70acde> | <fg #b3cfe7>{level}</fg #b3cfe7>: <light-white>{message}</light-white>\n"
 
 
 def create_logger() -> logger:
     """Customer logger creation."""
     logger.remove()
-    logger.add(
-        stdout,
-        colorize=True,
-        format=log_formatter,
-    )
-    if ENVIRONMENT == "production" and path.isdir("/var/log/api"):
+    logger.add(stdout, colorize=True, catch=True, format=log_formatter)
+    if ENVIRONMENT == "production" and path.isdir("/var/log/shibabot"):
         logger.add(
             "/var/log/shibabot/info.json",
             format=json_formatter,
