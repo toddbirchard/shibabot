@@ -1,12 +1,8 @@
 """Application entry point."""
-from config import DISCORD_TOKEN
-from shibabot import discord_bot
+from shibabot import create_bot
 
-
-def start():
-    """Start Discord bot."""
-    discord_bot.run(DISCORD_TOKEN)
+init_bot = create_bot()
 
 
 if __name__ == "__main__":
-    start()
+    create_bot()

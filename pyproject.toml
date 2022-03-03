@@ -32,12 +32,12 @@ uwsgi = "*"
 [tool.poetry.dev-dependencies]
 pytest = "*"
 mypy = "*"
-black = "21.10b0"
+black = "22.1.0"
 isort = "5.10.1"
 flake8 = "^4.0.1"
 
 [tool.poetry.scripts]
-run = "wsgi:start"
+run = "wsgi:create_bot"
 
 [tool.poetry.urls]
 issues = "https://github.com/toddbirchard/shibabot/issues"
