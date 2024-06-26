@@ -1,4 +1,5 @@
 """External API integrations."""
+
 from random import randint
 from typing import Optional
 
@@ -30,7 +31,9 @@ def get_giphy_image(query: str) -> str:
         "lang": "en",
     }
     try:
-        req = requests.get("https://api.giphy.com/v1/gifs/search", params=params)
+        req = requests.get(
+            "https://api.giphy.com/v1/gifs/search", params=params, timeout=20
+        )
         if req.status_code != 200 or bool(req.json()["data"]) is False:
             return "image not found :("
         image = req.json()["data"][0]["images"]["downsized"]["url"]
@@ -38,18 +41,19 @@ def get_giphy_image(query: str) -> str:
     except HTTPError as e:
         LOGGER.error(f"Giphy failed to fetch `{query}`: {e.response.content}")
         return emojize(
-            f":warning: yoooo giphy is down rn lmao :warning:", use_aliases=True
+            f":warning: yoooo giphy is down rn lmao :warning:\n\n{e}", language="en"
         )
     except LookupError as e:
         LOGGER.error(f"Giphy KeyError for `{query}`: {e}")
         return emojize(
-            f":warning: holy sht u broke the bot im telling bro :warning:",
-            use_aliases=True,
+            f":warning: holy sht u broke the bot im telling bro :warning:\n\n{e}",
+            language="en",
         )
     except Exception as e:
         LOGGER.error(f"Giphy unexpected error for `{query}`: {e}")
         return emojize(
-            f":warning: AAAAAA I'M BROKEN WHAT DID YOU DO :warning:", use_aliases=True
+            f":warning: AAAAAA I'M BROKEN WHAT DID YOU DO :warning:\n\n{e}",
+            language="en",
         )
 
 
@@ -140,7 +144,10 @@ def get_urban_definition(word: str) -> Optional[str]:
     headers = {"Content-Type": "application/json"}
     try:
         req = requests.get(
-            "http://api.urbandictionary.com/v0/define", params=params, headers=headers
+            "http://api.urbandictionary.com/v0/define",
+            params=params,
+            headers=headers,
+            timeout=20,
         )
         results = req.json().get("list")
         if results:
@@ -154,18 +161,18 @@ def get_urban_definition(word: str) -> Optional[str]:
             f"HTTPError while trying to get Urban definition for `{word}`: {e.response.content}"
         )
         return emojize(
-            f":warning: wtf urban dictionary is down :warning:", use_aliases=True
+            f":warning: wtf urban dictionary is down :warning:", language="en"
         )
     except LookupError as e:
         LOGGER.error(
             f"LookupError error when fetching Urban definition for `{word}`: {e}"
         )
-        return emojize(":warning: mfer you broke bot :warning:", use_aliases=True)
+        return emojize(":warning: mfer you broke bot :warning:", language="en")
     except Exception as e:
         LOGGER.error(
             f"Unexpected error when fetching Urban definition for `{word}`: {e}"
         )
-        return emojize(":warning: mfer you broke bot :warning:", use_aliases=True)
+        return emojize(":warning: mfer you broke bot :warning:", language="en")
 
 
 def get_weather(location: str) -> str:
@@ -179,22 +186,22 @@ def get_weather(location: str) -> str:
     endpoint = "http://api.weatherstack.com/current"
     params = {"access_key": WEATHERSTACK_API_KEY, "query": location, "units": "f"}
     try:
-        req = requests.get(endpoint, params=params)
+        req = requests.get(endpoint, params=params, timeout=20)
         data = req.json()
         condition = data["current"]["weather_descriptions"][0]
         icon_name = condition.lower()
         if "lightning" in icon_name or "storm" in icon_name:
-            icon = emojize(":cloud_with_lightning_and_rain:", use_aliases=True)
+            icon = emojize(":cloud_with_lightning_and_rain:", language="en")
         elif "snow" in icon_name or "ice" in icon_name:
-            icon = emojize(":snowflake:", use_aliases=True)
+            icon = emojize(":snowflake:", language="en")
         elif "rain" in icon_name or "showers" in icon_name:
-            icon = emojize(":cloud_with_rain:", use_aliases=True)
+            icon = emojize(":cloud_with_rain:", language="en")
         elif "cloudy" in icon_name or "partly" in icon_name:
-            icon = emojize(":partly_sunny:", use_aliases=True)
+            icon = emojize(":partly_sunny:", language="en")
         elif "cloud" in icon_name or "fog" in icon_name:
-            icon = emojize(":cloud_with_rain:", use_aliases=True)
+            icon = emojize(":cloud_with_rain:", language="en")
         else:
-            icon = emojize(":sunny:", use_aliases=True)
+            icon = emojize(":sunny:", language="en")
         return (
             f'{data["request"]["query"]}:\n'
             f'{icon}  {data["current"]["weather_descriptions"][0]}.  {data["current"]["temperature"]}°f (feels like {data["current"]["feelslike"]}°f). \
@@ -204,17 +211,17 @@ def get_weather(location: str) -> str:
         LOGGER.error(f"Failed to get weather for `{location}`: {e.response.content}")
         return emojize(
             f":warning:️️ fk me the weather API is down :warning:",
-            use_aliases=True,
+            language="en",
         )
     except LookupError as e:
         LOGGER.error(f"LookupError while fetching weather for `{location}`: {e}")
         return emojize(
             f":warning:️️ omfg u broke the bot WHAT DID YOU DO IM DEAD AHHHHHH :warning:",
-            use_aliases=True,
+            language="en",
         )
     except Exception as e:
         LOGGER.error(f"Failed to get weather for `{location}`: {e}")
         return emojize(
             f":warning:️️ omfg u broke the bot WHAT DID YOU DO IM DEAD AHHHHHH :warning:",
-            use_aliases=True,
+            language="en",
         )

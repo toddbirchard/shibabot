@@ -1,6 +1,7 @@
 """Create logger to catch and notify on failure."""
 import json
 import re
+from datetime import datetime
 from os import path
 from sys import stdout
 
@@ -9,33 +10,68 @@ from loguru import logger
 from config import ENVIRONMENT
 
 
-def json_formatter(record: dict):
+def json_formatter(record: dict) -> str:
     """
-    Pass raw log to be serialized.
+    Format info message logs.
 
-    :param dict record: Dictionary containing logged message with metadata.
+    :param dict record: Log object containing log metadata & message.
+
+    :returns: str
     """
+    if isinstance(record, (str, bool)):
+        return construct_json_from_corrupted_log(record)
 
-    def serialize(log: dict):
+    record["time"] = record["time"].strftime("%m/%d/%Y, %H:%M:%S")
+    record["elapsed"] = record["elapsed"].total_seconds()
+
+    def serialize_as_admin(log: dict) -> str:
         """
-        Parse log message into Datadog JSON format.
+        Construct JSON info log record where user is room admin.
 
         :param dict log: Dictionary containing logged message with metadata.
+
+        :returns: str
         """
         try:
-            subset = {
-                "time": log["time"].strftime("%m/%d/%Y, %H:%M:%S"),
-                "message": log["message"],
-                "level": log["level"].name,
-                # "function": log.get("function"),
-                # "module": log.get("name"),
-            }
-            if log.get("exception", None):
-                subset.update({"exception": log["exception"]})
-            return json.dumps(subset)
+            chat_data = re.search(
+                r"(?P<room>\[\S+]) (?P<user>\[\S+]) (?P<ip>\[\S+])", log.get("message")
+            )
+            if chat_data and log.get("message"):
+                message = log["message"].split(": ", 1)[1].replace("\n", "\t")
+                subset = {
+                    "time": log["time"],
+                    "message": message,
+                    "level": log["level"].name,
+                    "room": chat_data["room"].replace("[", "").replace("]", ""),
+                    "user": chat_data["user"].replace("[", "").replace("]", ""),
+                    "ip": chat_data["ip"].replace("[", "").replace("]", ""),
+                }
+                return json.dumps(subset)
         except Exception as e:
-            log["error"] = f"Logging error occurred: {e}"
-            return serialize_error(log)
+            subset["error"] = f"Logging error occurred: {str(e)}"
+            return serialize_error(subset)
+
+    def serialize_event(log: dict) -> str:
+        """
+        Construct warning log.
+
+        :param dict log: Dictionary containing logged message with metadata.
+
+        :returns: str
+        """
+        try:
+            chat_data = re.search(r"(?P<room>\[\S+]) (?P<user>\[\S+])", log["message"])
+            if bool(chat_data) and log.get("message") is not None:
+                subset = {
+                    "time": log["time"],
+                    "message": log["message"].split(": ", 1)[1],
+                    "level": log["level"].name,
+                    "room": chat_data["room"].replace("[", "").replace("]", ""),
+                    "user": chat_data["user"].replace("[", "").replace("]", ""),
+                }
+                return json.dumps(subset)
+        except Exception as e:
+            log["error"] = f"Logging error occurred: {str(e)}"
 
     def serialize_error(log: dict) -> str:
         """
@@ -45,19 +81,41 @@ def json_formatter(record: dict):
 
         :returns: str
         """
-        subset = {
-            "time": log["time"].strftime("%m/%d/%Y, %H:%M:%S"),
-            "level": log["level"].name,
-            "message": log["message"],
-        }
-        return json.dumps(subset)
+        if log and log.get("message"):
+            subset = {
+                "time": log["time"],
+                "level": log["level"].name,
+                "message": log["message"],
+            }
+            return json.dumps(subset)
 
-    if record["level"].name == "ERROR":
+    if record["level"].name == "INFO":
+        record["extra"]["serialized"] = serialize_as_admin(record)
+        return "{extra[serialized]},\n"
+    if record["level"].name in ("TRACE", "WARNING", "SUCCESS"):
+        record["extra"]["serialized"] = serialize_event(record)
+        return "{extra[serialized]},\n"
+    if record["level"].name in ("ERROR", "CRITICAL"):
         record["extra"]["serialized"] = serialize_error(record)
-    else:
-        record["extra"]["serialized"] = serialize(record)
-
+        serialize_error(record)
+        return "{extra[serialized]},\n"
+    record["extra"]["serialized"] = serialize_error(record)
     return "{extra[serialized]},\n"
+
+
+def construct_json_from_corrupted_log(log: str) -> str:
+    """
+    Create JSON log record from corrupt string.
+
+    :param str log: Corrupt log string.
+
+    :returns: str
+    """
+    return {
+        "time": datetime.strftime(datetime.now(), "%m/%d/%Y, %H:%M:%S"),
+        "level": "ERROR",
+        "message": log,
+    }
 
 
 def serialize_trace(record: dict) -> str:
@@ -104,25 +162,18 @@ def log_formatter(record: dict) -> str:
     return "<fg #70acde>{time:MM-DD-YYYY HH:mm:ss}</fg #70acde> | <fg #b3cfe7>{level}</fg #b3cfe7>: <light-white>{message}</light-white>\n"
 
 
-def create_logger() -> logger:
+def create_logger():
     """Customer logger creation."""
     logger.remove()
     logger.add(stdout, colorize=True, catch=True, format=log_formatter)
     if ENVIRONMENT == "production" and path.isdir("/var/log/shibabot"):
         logger.add(
-            "/var/log/shibabot/info.json",
+            "/var/log/shibabot/access.json",
             format=json_formatter,
             rotation="200 MB",
             compression="zip",
             catch=True,
         )
-        # Datadog APM tracing
-        """logger.add(
-            "/var/log/shibabot/apm.log",
-            format=DD_APM_FORMAT,
-            rotation="200 MB",
-            compression="zip",
-        )"""
         logger.add(
             "/var/log/shibabot/info.log",
             colorize=True,

@@ -31,7 +31,7 @@ all help:
 
 .PHONY: run
 run: env
-	if [[ "./wsgi.py" ]]; then $(LOCAL_PYTHON) wsgi.py; fi
+	if [[ "./main.py" ]]; then $(LOCAL_PYTHON) main.py; fi
 
 
 .PHONY: install

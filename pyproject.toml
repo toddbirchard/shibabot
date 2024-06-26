@@ -16,7 +16,7 @@ keywords = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10,<4"
 discord = "*"
 requests = "*"
 loguru = "*"
@@ -28,16 +28,15 @@ imdbpy = "*"
 emoji = "*"
 python-dotenv = "*"
 uwsgi = "*"
-
-[tool.poetry.dev-dependencies]
+poetry-plugin-export = "*"
 pytest = "*"
 mypy = "*"
-black = "22.1.0"
-isort = "5.10.1"
-flake8 = "^4.0.1"
+black = "*"
+isort = "*"
+flake8 = "*"
 
 [tool.poetry.scripts]
-run = "wsgi:create_bot"
+run = "main:create_bot"
 
 [tool.poetry.urls]
 issues = "https://github.com/toddbirchard/shibabot/issues"

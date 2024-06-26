@@ -2,8 +2,8 @@
 
 ![Shibabot](./.github/shibabot_small@2x.png)
 
-![Python](https://img.shields.io/badge/Python-v^3.8-blue.svg?logo=python&longCache=true&logoColor=white&colorB=5e81ac&style=flat-square&colorA=4c566a)
-![Discord](https://img.shields.io/badge/Discord-v1.7.3-blue.svg?longCache=true&logo=discord&style=flat-square&logoColor=white&colorB=B48EAD&colorA=4c566a)
+![Python](https://img.shields.io/badge/Python-v^3.10-blue.svg?logo=python&longCache=true&logoColor=white&colorB=5e81ac&style=flat-square&colorA=4c566a)
+![Discord](https://img.shields.io/badge/Discord-v2.4.0-blue.svg?longCache=true&logo=discord&style=flat-square&logoColor=white&colorB=B48EAD&colorA=4c566a)
 ![GitHub Last Commit](https://img.shields.io/github/last-commit/google/skia.svg?style=flat-square&colorA=4c566a&colorB=a3be8c&logo=GitHub)
 [![GitHub Issues](https://img.shields.io/github/issues/toddbirchard/shibabot.svg?style=flat-square&colorA=4c566a&logo=GitHub&colorB=ebcb8b)](https://github.com/toddbirchard/shibabot/issues)
 [![GitHub Stars](https://img.shields.io/github/stars/toddbirchard/shibabot.svg?style=flat-square&colorA=4c566a&logo=GitHub&colorB=ebcb8b)](https://github.com/toddbirchard/shibabot/stargazers)

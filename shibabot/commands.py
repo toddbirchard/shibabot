@@ -1,4 +1,5 @@
 """Register bot commands."""
+
 from datetime import datetime
 
 import pytz

@@ -129,7 +129,11 @@ dmypy.json
 .pyre/
 
 # PyCharm
-.idea
+.idea/
+.vscode/
 
 # Mac OS
 .DS_Store
+
+# Creds
+gcloud.json

@@ -4,10 +4,10 @@ from os import environ, getenv, path
 from dotenv import load_dotenv
 
 # Load values from .env
-basedir = path.abspath(path.dirname(__file__))
-load_dotenv(path.join(basedir, ".env"))
+BASE_DIR = path.abspath(path.dirname(__file__))
+load_dotenv(path.join(BASE_DIR, ".env"))
 
-# General config
+# General configC
 ENVIRONMENT = environ.get("ENVIRONMENT")
 BASE_DIR = environ.get("BASE_DIR")
 
@@ -16,7 +16,11 @@ DISCORD_TOKEN = environ.get("DISCORD_TOKEN")
 DISCORD_CHANNEL_HACKERS = environ.get("DISCORD_CHANNEL_HACKERS")
 DISCORD_CHANNEL_SHIBA = environ.get("DISCORD_CHANNEL_SHIBA")
 DISCORD_CHANNEL_MAX = environ.get("DISCORD_CHANNEL_MAX")
-DISCORD_GUILDS = [DISCORD_CHANNEL_HACKERS, DISCORD_CHANNEL_SHIBA, DISCORD_CHANNEL_MAX]
+DISCORD_GUILDS = [
+    DISCORD_CHANNEL_HACKERS,
+    # DISCORD_CHANNEL_SHIBA,
+    # DISCORD_CHANNEL_MAX
+]
 
 # Database
 DATABASE_URI = environ.get("DATABASE_URI")
