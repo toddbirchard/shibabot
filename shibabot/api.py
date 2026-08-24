@@ -174,6 +174,7 @@ def get_urban_definition(word: str) -> Optional[str]:
             headers=headers,
             timeout=20,
         )
+        req.raise_for_status()
         results = req.json().get("list")
         if results:
             results = sorted(results, key=lambda i: i["thumbs_down"], reverse=True)
@@ -212,6 +213,7 @@ def get_weather(location: str) -> str:
     params = {"access_key": WEATHERSTACK_API_KEY, "query": location, "units": "f"}
     try:
         req = requests.get(endpoint, params=params, timeout=20)
+        req.raise_for_status()
         data = req.json()
         condition = data["current"]["weather_descriptions"][0]
         icon_name = condition.lower()
