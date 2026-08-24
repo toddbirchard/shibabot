@@ -1,4 +1,5 @@
 """Create logger to catch and notify on failure."""
+
 import json
 import re
 from datetime import datetime

@@ -10,7 +10,7 @@ from imdb import IMDb, IMDbError
 from requests.exceptions import HTTPError
 
 from config import GIPHY_API_KEY, WEATHERSTACK_API_KEY
-from log import LOGGER
+from logger import LOGGER
 
 
 def get_giphy_image(query: str) -> str:
@@ -78,36 +78,64 @@ def get_imdb_movie(movie_title: str) -> Optional[str]:
 
     :returns: Optional[str]
     """
-    ia = IMDb()
-    movie_id = None
     try:
+        ia = IMDb()
         movies = ia.search_movie(movie_title)
-        movie_id = movies[0].getID()
+        if not movies:
+            LOGGER.warning(f"No IMDB results found for `{movie_title}`.")
+            return None
+        movie = ia.get_movie(movies[0].getID())
     except IMDbError as e:
         LOGGER.error(f"IMDB command threw error for command `{movie_title}`: {e}")
-    if movie_id:
-        movie = ia.get_movie(movie_id)
-        cast = f"STARRING {', '.join([actor['name'] for actor in movie.data['cast'][:2]])}."
-        art = movie.data.get("cover url", None)
-        director = f"DIRECTED by {movie.data.get('director')[0].get('name')}."
-        year = movie.data.get("year")
-        genres = f"({', '.join(movie.data.get('genres'))}, {year})."
-        title = f"{movie.data.get('title').upper()},"
-        rating = f"{movie.data.get('rating')}/10"
-        box_office = imdb_box_office_data(movie)
-        synopsis = movie.data.get("synopsis")
-        if synopsis:
-            try:
-                synopsis = synopsis[0]
-                synopsis = " ".join(synopsis[0].split(". ")[:2])
-            except KeyError as e:
-                LOGGER.error(f"IMDB movie `{title}` does not have a synopsis: {e}")
-        response = " ".join(
-            filter(
-                None, [title, rating, genres, cast, director, synopsis, box_office, art]
-            )
-        )
-        return response
+        return None
+    except Exception as e:
+        LOGGER.error(f"Unexpected error fetching IMDB movie `{movie_title}`: {e}")
+        return None
+
+    data = getattr(movie, "data", None) or {}
+    title = data.get("title")
+    if not title:
+        LOGGER.warning(f"IMDB result for `{movie_title}` has no title.")
+        return None
+
+    # Each field is omitted entirely when IMDB doesn't supply it, rather than
+    # rendering as "None" or a placeholder in the middle of the response.
+    parts = [f"{title.upper()},"]
+
+    rating = data.get("rating")
+    if rating:
+        parts.append(f"{rating}/10")
+
+    genres = data.get("genres") or []
+    year = data.get("year")
+    descriptor = ", ".join([*genres, str(year)] if year else genres)
+    if descriptor:
+        parts.append(f"({descriptor}).")
+
+    cast = [actor.get("name") for actor in (data.get("cast") or [])[:2]]
+    cast = [name for name in cast if name]
+    if cast:
+        parts.append(f"STARRING {', '.join(cast)}.")
+
+    directors = data.get("director") or []
+    director = directors[0].get("name") if directors else None
+    if director:
+        parts.append(f"DIRECTED by {director}.")
+
+    synopsis = data.get("synopsis")
+    if synopsis:
+        # `synopsis` is a list of blurbs; keep the first two sentences of the first.
+        parts.append(". ".join(synopsis[0].split(". ")[:2]))
+
+    box_office = imdb_box_office_data(movie)
+    if box_office:
+        parts.append(box_office)
+
+    art = data.get("cover url")
+    if art:
+        parts.append(art)
+
+    return " ".join(parts)
 
 
 def imdb_box_office_data(movie) -> Optional[str]:
@@ -116,20 +144,17 @@ def imdb_box_office_data(movie) -> Optional[str]:
 
     :returns: Optional[str]
     """
-    response = []
-    if movie.data.get("box office", None):
-        budget = movie.data["box office"].get("Budget", None)
-        opening_week = movie.data["box office"].get(
-            "Opening Weekend United States", None
-        )
-        gross = movie.data["box office"].get("Cumulative Worldwide Gross", None)
-        if budget:
-            response.append(f"BUDGET {budget}.")
-        if opening_week:
-            response.append(f"OPENING WEEK {opening_week}.")
-        if gross:
-            response.append(f"CUMULATIVE WORLDWIDE GROSS {gross}.")
-        return " ".join(response)
+    box_office = getattr(movie, "data", None) or {}
+    box_office = box_office.get("box office") or {}
+    fields = (
+        ("Budget", "BUDGET"),
+        ("Opening Weekend United States", "OPENING WEEK"),
+        ("Cumulative Worldwide Gross", "CUMULATIVE WORLDWIDE GROSS"),
+    )
+    response = [
+        f"{label} {box_office[key]}." for key, label in fields if box_office.get(key)
+    ]
+    return " ".join(response) or None
 
 
 def get_urban_definition(word: str) -> Optional[str]:
@@ -158,10 +183,10 @@ def get_urban_definition(word: str) -> Optional[str]:
             return f"{word}: {definition}. EXAMPLE: {example}."
     except HTTPError as e:
         LOGGER.error(
-            f"HTTPError while trying to get Urban definition for `{word}`: {e.response.content}"
+            f"HTTPError while trying to get Urban definition for `{word}`: {e.response}"
         )
         return emojize(
-            f":warning: wtf urban dictionary is down :warning:", language="en"
+            ":warning: wtf urban dictionary is down :warning:", language="en"
         )
     except LookupError as e:
         LOGGER.error(
@@ -208,20 +233,20 @@ def get_weather(location: str) -> str:
                {data["current"]["precip"]}% precipitation.'
         )
     except HTTPError as e:
-        LOGGER.error(f"Failed to get weather for `{location}`: {e.response.content}")
+        LOGGER.error(f"Failed to get weather for `{location}`: {e.response}")
         return emojize(
-            f":warning:️️ fk me the weather API is down :warning:",
+            ":warning:️️ fk me the weather API is down :warning:",
             language="en",
         )
     except LookupError as e:
         LOGGER.error(f"LookupError while fetching weather for `{location}`: {e}")
         return emojize(
-            f":warning:️️ omfg u broke the bot WHAT DID YOU DO IM DEAD AHHHHHH :warning:",
+            ":warning:️️ omfg u broke the bot WHAT DID YOU DO IM DEAD AHHHHHH :warning:",
             language="en",
         )
     except Exception as e:
         LOGGER.error(f"Failed to get weather for `{location}`: {e}")
         return emojize(
-            f":warning:️️ omfg u broke the bot WHAT DID YOU DO IM DEAD AHHHHHH :warning:",
+            ":warning:️️ omfg u broke the bot WHAT DID YOU DO IM DEAD AHHHHHH :warning:",
             language="en",
         )

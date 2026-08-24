@@ -1,12 +1,12 @@
 """Register bot commands."""
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytz
 from discord.ext.commands import Bot
 
 from clients import crypto_chart_handler, stock_chart_handler
-from log import LOGGER
+from logger import LOGGER
 
 from .api import (
     get_giphy_image,
@@ -23,8 +23,9 @@ def bot_commands(bot) -> Bot:
     @bot.command(name="420", help="Get time remaining until that time of day.")
     async def time_remaining(ctx):
         """Get remaining time until target time."""
-        LOGGER.info("Test")
-        now = datetime.now(tz=pytz.timezone("America/New_York"))
+        # Zero microseconds so the countdown is always whole seconds, regardless
+        # of which target time it subtracts against.
+        now = datetime.now(tz=pytz.timezone("America/New_York")).replace(microsecond=0)
         am_time = now.replace(hour=4, minute=20, second=0)
         pm_time = now.replace(hour=16, minute=20, second=0)
         if am_time > now:
@@ -32,7 +33,9 @@ def bot_commands(bot) -> Bot:
         elif am_time < now < pm_time:
             remaining = f"{pm_time - now}"
         else:
-            tomorrow_am_time = now.replace(day=now.day + 1, hour=4, minute=20, second=0)
+            tomorrow_am_time = (now + timedelta(days=1)).replace(
+                hour=4, minute=20, second=0
+            )
             remaining = f"{tomorrow_am_time - now}"
         remaining = remaining.split(":")
         await ctx.send(
@@ -76,9 +79,12 @@ def bot_commands(bot) -> Bot:
         await ctx.send(response)
 
     @bot.command(
-        name="urban", help="Get a definition from UrbanDictionary.", alias="define"
+        name="urban",
+        help="Get a definition from UrbanDictionary.",
+        aliases=["define"],
     )
     async def urban(ctx, *args):
+        """Get UrbanDictionary definition of a word or phrase."""
         word = " ".join(args[:])
         response = get_urban_definition(word)
         await ctx.send(response)
@@ -88,6 +94,7 @@ def bot_commands(bot) -> Bot:
         help="Get weather conditions for a given city, area, or zip code.",
     )
     async def weather(ctx, area: str):
+        """Get current weather conditions for a location."""
         response = get_weather(area)
         await ctx.send(response)
 

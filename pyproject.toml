@@ -1,47 +1,53 @@
-[tool.poetry]
+[project]
 name = "shibabot"
 version = "0.1.0"
 description = "Chatbot for Discord"
-authors = ["Todd Birchard <toddbirchard@gmail.com>"]
+authors = [{ name = "Todd Birchard", email = "toddbirchard@gmail.com" }]
 readme = "README.md"
+requires-python = ">=3.12"
+keywords = ["Discord", "Bot", "Chatbot", "Python", "Discord Bot"]
+dependencies = [
+    "chart-studio",
+    "cinemagoer",
+    "discord-py>=2.0",
+    "emoji",
+    "loguru",
+    "pandas",
+    "plotly",
+    "python-dotenv",
+    "pytz",
+    "requests",
+    "wikipedia-api",
+]
+
+[project.urls]
 homepage = "https://github.com/toddbirchard/shibabot/"
 repository = "https://github.com/toddbirchard/shibabot/"
 documentation = "https://github.com/toddbirchard/shibabot/"
-keywords = [
-    "Discord",
-    "Bot",
-    "Chatbot",
-    "Python",
-    "Discord Bot"
-]
-
-[tool.poetry.dependencies]
-python = "^3.10,<4"
-discord = "*"
-requests = "*"
-loguru = "*"
-pandas = "*"
-plotly = "*"
-chart-studio = "*"
-wikipedia-api = "*"
-imdbpy = "*"
-emoji = "*"
-python-dotenv = "*"
-uwsgi = "*"
-poetry-plugin-export = "*"
-pytest = "*"
-mypy = "*"
-black = "*"
-isort = "*"
-flake8 = "*"
-
-[tool.poetry.scripts]
-run = "main:create_bot"
-
-[tool.poetry.urls]
 issues = "https://github.com/toddbirchard/shibabot/issues"
 
-[build-system]
-requires = ["poetry>=1.1.11"]
-build-backend = "poetry.masonry.api"
+[dependency-groups]
+dev = [
+    "black",
+    "flake8",
+    "isort",
+    "mypy",
+    "pytest",
+    "pytest-asyncio>=1.4.0",
+]
 
+[tool.uv]
+# Shibabot is an application, not a distributable library: don't build/install it.
+package = false
+
+[tool.black]
+# Pin the target so black's AST safety check can run on the local interpreter;
+# without it black infers py315 from requires-python and skips verification.
+target-version = ["py312"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# The project isn't installed (package = false), so put the repo root on sys.path.
+pythonpath = ["."]
+# Let async test functions run without a per-test decorator.
+asyncio_mode = "auto"
