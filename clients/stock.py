@@ -1,4 +1,6 @@
 """Cloud-hosted Candlestick charts of company stock data."""
+
+from io import BytesIO
 from typing import Optional
 
 import chart_studio.plotly as py
@@ -7,13 +9,19 @@ import plotly.graph_objects as go
 import requests
 from requests.exceptions import HTTPError
 
-from log import LOGGER
+from logger import LOGGER
 
 
 class StockChartHandler:
     """Create chart from stock market data."""
 
     def __init__(self, token: str, endpoint: str):
+        """
+        Create a handler bound to a stock data API.
+
+        :param str token: IEX Cloud API token.
+        :param str endpoint: Base URL for per-symbol IEX Cloud endpoints.
+        """
         self.token = token
         self.endpoint = endpoint
 
@@ -68,7 +76,7 @@ class StockChartHandler:
     @staticmethod
     def _parse_chart_data(data: bytes) -> Optional[pd.DataFrame]:
         """Parse JSON response into Pandas DataFrame"""
-        stock_df = pd.read_json(data)
+        stock_df = pd.read_json(BytesIO(data))
         stock_df = stock_df.loc[stock_df["date"].dt.dayofweek < 5]
         stock_df.set_index(keys=stock_df["date"], inplace=True)
         return stock_df

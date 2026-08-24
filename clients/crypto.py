@@ -1,4 +1,5 @@
 """Cloud-hosted Candlestick charts of crypto performance."""
+
 from datetime import datetime
 from typing import Optional
 
@@ -8,13 +9,20 @@ import plotly.graph_objects as go
 import requests
 from requests.exceptions import HTTPError
 
-from log import LOGGER
+from logger import LOGGER
 
 
 class CryptoChartHandler:
     """Create chart from stock market data."""
 
     def __init__(self, token: str, price_endpoint: str, chart_endpoint: str):
+        """
+        Create a handler bound to the crypto price & timeseries APIs.
+
+        :param str token: Alpha Vantage API key.
+        :param str price_endpoint: Base URL for current price summaries.
+        :param str chart_endpoint: Base URL for historical timeseries data.
+        """
         self.token = token
         self.price_endpoint = price_endpoint
         self.chart_endpoint = chart_endpoint

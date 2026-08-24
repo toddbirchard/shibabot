@@ -1,4 +1,5 @@
 """Configuration via environment variables."""
+
 from os import environ, getenv, path
 
 from dotenv import load_dotenv
@@ -7,19 +8,27 @@ from dotenv import load_dotenv
 BASE_DIR = path.abspath(path.dirname(__file__))
 load_dotenv(path.join(BASE_DIR, ".env"))
 
-# General configC
+# General config
 ENVIRONMENT = environ.get("ENVIRONMENT")
-BASE_DIR = environ.get("BASE_DIR")
 
 # Discord
 DISCORD_TOKEN = environ.get("DISCORD_TOKEN")
-DISCORD_CHANNEL_HACKERS = environ.get("DISCORD_CHANNEL_HACKERS")
-DISCORD_CHANNEL_SHIBA = environ.get("DISCORD_CHANNEL_SHIBA")
+DISCORD_CHANNEL_HACKERS = environ.get("DISCORD_CHANNEL_HACKERS") or environ.get(
+    "DISCORD_CHANNEL_1"
+)
+DISCORD_CHANNEL_SHIBA = environ.get("DISCORD_CHANNEL_SHIBA") or environ.get(
+    "DISCORD_CHANNEL_2"
+)
 DISCORD_CHANNEL_MAX = environ.get("DISCORD_CHANNEL_MAX")
+# Names of guilds (servers) the bot is permitted to respond in.
 DISCORD_GUILDS = [
-    DISCORD_CHANNEL_HACKERS,
-    # DISCORD_CHANNEL_SHIBA,
-    # DISCORD_CHANNEL_MAX
+    guild
+    for guild in (
+        DISCORD_CHANNEL_HACKERS,
+        DISCORD_CHANNEL_SHIBA,
+        DISCORD_CHANNEL_MAX,
+    )
+    if guild
 ]
 
 # Database
