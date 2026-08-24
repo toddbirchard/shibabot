@@ -13,8 +13,12 @@ ENVIRONMENT = environ.get("ENVIRONMENT")
 
 # Discord
 DISCORD_TOKEN = environ.get("DISCORD_TOKEN")
-DISCORD_CHANNEL_HACKERS = environ.get("DISCORD_CHANNEL_HACKERS")
-DISCORD_CHANNEL_SHIBA = environ.get("DISCORD_CHANNEL_SHIBA")
+DISCORD_CHANNEL_HACKERS = environ.get("DISCORD_CHANNEL_HACKERS") or environ.get(
+    "DISCORD_CHANNEL_1"
+)
+DISCORD_CHANNEL_SHIBA = environ.get("DISCORD_CHANNEL_SHIBA") or environ.get(
+    "DISCORD_CHANNEL_2"
+)
 DISCORD_CHANNEL_MAX = environ.get("DISCORD_CHANNEL_MAX")
 # Names of guilds (servers) the bot is permitted to respond in.
 DISCORD_GUILDS = [
